@@ -898,6 +898,13 @@ div.multi_select_products_wrapper {
 }
 
 /* Configuration */
+#configurable_product_options {
+	p.description {
+		float: left;
+		padding: 0;
+		margin: 0;
+	}
+}
 .jigoshop_configuration {
 	background: #ececec;
 	border: 1px solid #ececec;
@@ -910,7 +917,8 @@ div.multi_select_products_wrapper {
 	}
 	table td {
 		background: #fff;
-		padding: 6px 12px;
+		padding: 6px 6px;
+		vertical-align: middle;
 		label {
 			color: #ccc;
 			font-size: 10px;
@@ -918,11 +926,26 @@ div.multi_select_products_wrapper {
 			text-align: right;
 			float: left;
 			width: 36%;
+			margin-right: 2%;
 			line-height: 30px;
 		}
 		input {
-			float: right;
+			float: left;
 			width: 60%;
+		}
+		&.upload_image {
+			img {
+				float: none;
+				margin-right: 6px;
+				vertical-align: middle;
+			}
+			.button {
+				margin: 0;
+				padding: 4px 10px;
+				width: auto;
+				float: none;
+				vertical-align: middle;
+			}
 		}
 	}
 }

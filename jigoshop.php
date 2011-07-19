@@ -250,7 +250,7 @@ function jigoshop_init() {
     	wp_enqueue_script('flot');
     	wp_enqueue_script('blockui');
     	wp_enqueue_script('cookie');
-    	
+
     else :
     
     	wp_enqueue_style('jigoshop_frontend_styles');

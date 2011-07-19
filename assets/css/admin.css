@@ -519,6 +519,7 @@ ul.recent-orders li .refunded, ul.recent-orders li .cancelled {
 }
 .jigoshop #tabs-wrap {
   background: #ececec;
+  width: 850px;
   padding: 7px 9px;
   overflow: hidden;
   margin-top: 0.5em !important;
@@ -829,6 +830,11 @@ div.multi_select_products_wrapper {
   color: #666;
 }
 /* Configuration */
+#configurable_product_options p.description {
+  float: left;
+  padding: 0;
+  margin: 0;
+}
 .jigoshop_configuration {
   background: #ececec;
   border: 1px solid #ececec;
@@ -842,7 +848,8 @@ div.multi_select_products_wrapper {
 }
 .jigoshop_configuration table td {
   background: #fff;
-  padding: 6px 12px;
+  padding: 6px 6px;
+  vertical-align: middle;
 }
 .jigoshop_configuration table td label {
   color: #ccc;
@@ -851,11 +858,24 @@ div.multi_select_products_wrapper {
   text-align: right;
   float: left;
   width: 36%;
+  margin-right: 2%;
   line-height: 30px;
 }
 .jigoshop_configuration table td input {
-  float: right;
+  float: left;
   width: 60%;
+}
+.jigoshop_configuration table td.upload_image img {
+  float: none;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+.jigoshop_configuration table td.upload_image .button {
+  margin: 0;
+  padding: 4px 10px;
+  width: auto;
+  float: none;
+  vertical-align: middle;
 }
 .widefat .product-cat-placeholder {
   outline: 1px dotted #A0C443;

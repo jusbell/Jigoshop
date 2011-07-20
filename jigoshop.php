@@ -102,7 +102,6 @@ add_theme_support( 'post-thumbnails' );
 add_action('init', 'jigoshop_init', 0);
 add_action('plugins_loaded', 'jigoshop_shipping::init', 1); 		// Load shipping methods - some may be added by plugins
 add_action('plugins_loaded', 'jigoshop_payment_gateways::init', 1); // Load payment methods - some may be added by plugins
-add_action('plugins_loaded', 'jigoshop_cart::calculate_totals', 2); // After methods are loaded we'll want to calc the totals of the cart
 
 if (get_option('jigoshop_force_ssl_checkout')=='yes') add_action( 'wp_head', 'jigoshop_force_ssl');
 
@@ -305,7 +304,13 @@ function jigoshop_demo_store() {
 function jigoshop_sharethis() {
 	if (is_single() && get_option('jigoshop_sharethis')) :
 		
-		echo '<script type="text/javascript">var switchTo5x=true;</script><script type="text/javascript" src="http://w.sharethis.com/button/buttons.js"></script><script type="text/javascript">stLight.options({publisher:"'.get_option('jigoshop_sharethis').'"});</script>';
+		if (is_ssl()) :
+			$sharethis = 'https://ws.sharethis.com/button/buttons.js';
+		else :
+			$sharethis = 'http://w.sharethis.com/button/buttons.js';
+		endif;
+		
+		echo '<script type="text/javascript">var switchTo5x=true;</script><script type="text/javascript" src="'.$sharethis.'"></script><script type="text/javascript">stLight.options({publisher:"'.get_option('jigoshop_sharethis').'"});</script>';
 		
 	endif;
 }

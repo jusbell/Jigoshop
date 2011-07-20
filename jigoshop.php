@@ -305,7 +305,7 @@ function jigoshop_demo_store() {
 function jigoshop_sharethis() {
 	if (is_single() && get_option('jigoshop_sharethis')) :
 		
-		echo '<script type="text/javascript" src="https://w.sharethis.com/button/buttons.js"></script><script type="text/javascript">stLight.options({publisher:"'.get_option('jigoshop_sharethis').'", onhover: false});</script>';
+		echo '<script type="text/javascript">var switchTo5x=true;</script><script type="text/javascript" src="http://w.sharethis.com/button/buttons.js"></script><script type="text/javascript">stLight.options({publisher:"'.get_option('jigoshop_sharethis').'"});</script>';
 		
 	endif;
 }

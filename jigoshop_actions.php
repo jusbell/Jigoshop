@@ -49,22 +49,33 @@ function jigoshop_add_to_cart_action( $url = false ) {
 			jigoshop::add_message( sprintf(__('<a href="%s" class="button">View Cart &rarr;</a> Product successfully added to your basket.', 'jigoshop'), jigoshop_cart::get_cart_url()) );
 		
 		elseif ($_GET['add-to-cart']=='variation') :
-		
+			
 			// Variation add to cart
 			if (isset($_POST['quantity']) && is_array($_POST['quantity'])) :
 				
-				$total_quantity = 0;
+				$product_id = (int) $_GET['product'];
+				$quantity 	= $_POST['quantity'] else $quantity = 1;;
+				$attributes = (array) maybe_unserialize( get_post_meta($product_id, 'product_attributes', true) );
+				$variations = array();
+				$all_variations_set = true;
 				
-				foreach ($_POST['quantity'] as $item => $quantity) :
-					if ($quantity>0) :
-						jigoshop_cart::add_to_cart($item, $quantity);
-						jigoshop::add_message( sprintf(__('<a href="%s" class="button">View Cart &rarr;</a> Product successfully added to your basket.', 'jigoshop'), jigoshop_cart::get_cart_url()) );
-						$total_quantity = $total_quantity + $quantity;
+				foreach ($attributes as $attribute) :
+								
+					if ( $attribute['variation']!=='yes' ) continue;
+					
+					if (isset($_POST[ 'option_' . sanitize_title($attribute['name']) ]) && $_POST[ 'option_' . sanitize_title($attribute['name']) ]) :
+						$variations[sanitize_title($attribute['name'])] = $_POST[ 'option_' . sanitize_title($attribute['name']) ];
+					else :
+						$all_variations_set = false;
 					endif;
+
 				endforeach;
 				
-				if ($total_quantity==0) :
-					jigoshop::add_error( __('Please choose a quantity&hellip;', 'jigoshop') );
+				if (!$all_variations_set) :
+					jigoshop::add_error( __('Please choose product options&hellip;', 'jigoshop') );
+				else :
+					jigoshop_cart::add_to_cart($item, $quantity);
+					jigoshop::add_message( sprintf(__('<a href="%s" class="button">View Cart &rarr;</a> Product successfully added to your basket.', 'jigoshop'), jigoshop_cart::get_cart_url()) );
 				endif;
 			
 			elseif ($_GET['product']) :

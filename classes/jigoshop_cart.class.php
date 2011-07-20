@@ -99,13 +99,19 @@ class jigoshop_cart {
 	 * @param   string	quantity	contains the quantity of the item to add
 	 */
 	function add_to_cart( $product_id, $quantity = 1 ) {
+	
 		if (isset(self::$cart_contents[$product_id])) :
+		
 			$quantity = $quantity + self::$cart_contents[$product_id]['quantity'];
 			self::$cart_contents[$product_id]['quantity'] = $quantity;
+			
 		else :
+		
 			self::$cart_contents[$product_id]['quantity'] = $quantity;
 			self::$cart_contents[$product_id]['data'] = &new jigoshop_product( $product_id );
+			
 		endif;
+		
 		self::set_session();
 	}
 	

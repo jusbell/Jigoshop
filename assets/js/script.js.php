@@ -149,6 +149,28 @@ jQuery(function(){
 
 	jQuery(".shipping-calculator-button").click(function() { return false; });
 	
+	// Variations
+	
+	function check_variations() {
+		
+		var not_set = false;
+		
+		jQuery('.variations select').each(function(){
+			if (jQuery(this).val()=="") not_set = true;
+		});
+		
+		if (!not_set) {
+			jQuery('.variations_button').slideDown();
+		} else {
+			jQuery('.variations_button').hide();
+		}
+		
+	}
+	
+	jQuery('.variations select').change(function(){
+		check_variations();
+	});
+	
 });
 
 <?php if (in_array('checkout', $load_scripts)) : ?>

@@ -50,6 +50,8 @@ class jigoshop_cart {
 		self::get_cart_from_session();
 		
 		if ( isset($_SESSION['coupons']) ) self::$applied_coupons = $_SESSION['coupons'];
+		
+		self::calculate_totals();
     }
 	
 	/** Gets the cart data from the PHP session */
@@ -57,11 +59,12 @@ class jigoshop_cart {
 		if ( isset($_SESSION['cart']) && $_SESSION['cart'] ) :
 			$cart = $_SESSION['cart'];
 			
-			foreach ($cart as $item_id => $quantity) :
+			foreach ($cart as $item_id => $values) :
 				$_product = &new jigoshop_product( $item_id );
 				if ($_product->exists) :
-					self::$cart_contents[$item_id]['quantity'] = $quantity;
+					self::$cart_contents[$item_id]['quantity'] = $values['quantity'];
 					self::$cart_contents[$item_id]['data'] = $_product;
+					if (isset($values['variation'])) self::$cart_contents[$item_id]['variation'] = $values['variation'];
 				endif;
 			endforeach;
 			
@@ -74,7 +77,8 @@ class jigoshop_cart {
 	function set_session() {
 		$cart = array();
 		foreach (self::$cart_contents as $item_id => $values) :
-			$cart[$item_id] = $values['quantity'];
+			$cart[$item_id]['quantity'] = $values['quantity'];
+			if (isset($values['variation'])) $cart[$item_id]['variation'] = $values['variation'];
 		endforeach;
 		$_SESSION['cart'] = $cart;
 		

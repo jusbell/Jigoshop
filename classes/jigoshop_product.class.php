@@ -156,6 +156,9 @@ class jigoshop_product {
 		if ( $this->has_child() ) :
 			$url = add_query_arg('add-to-cart', 'group');
 			$url = add_query_arg('product', $this->id, $url);
+		elseif ($this->is_type('configurable')) :
+			$url = add_query_arg('add-to-cart', 'variation');
+			$url = add_query_arg('product', $this->id, $url);
 		else :
 			$url = add_query_arg('add-to-cart', $this->id);
 		endif;

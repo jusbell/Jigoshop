@@ -326,8 +326,10 @@ if (!function_exists('jigoshop_configurable_add_to_cart')) {
 				?>
 				</tbody>
 			</table>
-			<div class="quantity"><input name="quantity" value="1" size="4" title="Qty" class="input-text qty text" maxlength="12" /></div>
-			<button type="submit" class="button-alt"><?php _e('Add to cart', 'jigoshop'); ?></button>
+			<div class="variations_button" style="display:none;">
+				<div class="quantity"><input name="quantity" value="1" size="4" title="Qty" class="input-text qty text" maxlength="12" /></div>
+				<button type="submit" class="button-alt"><?php _e('Add to cart', 'jigoshop'); ?></button>
+			</div>
 			<?php do_action('jigoshop_add_to_cart_form'); ?>
 		</form>
 		<?php

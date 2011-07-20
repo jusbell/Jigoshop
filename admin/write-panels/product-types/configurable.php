@@ -1,12 +1,26 @@
 <?php
-
+/**
+ * Configurable Product Type
+ * 
+ * Functions specific to configurable products (for the write panels)
+ *
+ * @author 		Jigowatt
+ * @category 	Admin Write Panel Product Types
+ * @package 	JigoShop
+ */
+ 
 /**
  * Product Options
  * 
- * Add an options panel for this product type
- **/
+ * Product Options for the configurable product type
+ *
+ * @since 		1.0
+ */
 function configurable_product_type_options() {
 	global $post;
+	
+	$attributes = maybe_unserialize( get_post_meta($post->ID, 'product_attributes', true) );
+	if (!isset($attributes)) $attributes = array();
 	?>
 	<div id="configurable_product_options" class="panel">
 		
@@ -16,8 +30,7 @@ function configurable_product_type_options() {
 					<button type="button" class="remove_config button"><?php _e('Remove', 'jigoshop'); ?></button>
 					<strong><?php _e('Variation:', 'jigoshop'); ?></strong>
 					<?php
-						$attributes = maybe_unserialize( get_post_meta($post->ID, 'product_attributes', true) );
-						if (isset($attributes) && sizeof($attributes)>0) foreach ($attributes as $attribute) :
+						foreach ($attributes as $attribute) :
 							
 							if ( $attribute['variation']!=='yes' ) continue;
 							
@@ -25,7 +38,7 @@ function configurable_product_type_options() {
 							
 							if (!is_array($options)) $options = explode(',', $options);
 							
-							echo '<select name="'.sanitize_title($attribute['name']).'"><option value="">'.$attribute['name'].'&hellip;</option><option>'.implode('</option><option>', $options).'</option></select>';
+							echo '<select name="'.sanitize_title($attribute['name']).'"><option value="">'.__('Any ', 'jigoshop').$attribute['name'].'&hellip;</option><option>'.implode('</option><option>', $options).'</option></select>';
 
 						endforeach;
 					?>
@@ -46,7 +59,7 @@ function configurable_product_type_options() {
 				</table>
 			</div>
 		</div>
-		<p class="description"><?php _e('Add pricing/inventory for product variations. All fields are optional; leave blank to use attributes from the main product data. <strong>Note:</strong> Please save your product attributes in the "Product Data" panel first.', 'jigoshop'); ?></p>
+		<p class="description"><?php _e('Add (optional) pricing/inventory for product variations. You must save your product attributes in the "Product Data" panel first for them to be available.', 'jigoshop'); ?></p>
 
 		<button type="button" class="button button-primary add_configuration"><?php _e('Add Configuration', 'jigoshop'); ?></button>
 		
@@ -56,45 +69,39 @@ function configurable_product_type_options() {
 }
 add_action('jigoshop_product_type_options_box', 'configurable_product_type_options');
 
+ 
 /**
- * Product Type selector
+ * Product Type Javascript
  * 
- * Adds type to the selector on the edit product page
- **/
-function configurable_product_type_selector( $product_type ) {
-	echo '<option value="configurable" '; if ($product_type=='configurable') echo 'selected="selected"'; echo '>'.__('Configurable','jigoshop').'</option>';
-}
-add_action('product_type_selector', 'configurable_product_type_selector');
-
-/**
- * Product Type JavaScript
- * 
- * Adds JavaScript for the panel
- **/
-function configurable_product_write_panel_js( $product_type ) {
-	
+ * Javascript for the configurable product type
+ *
+ * @since 		1.0
+ */
+function configurable_product_write_panel_js() {
 	global $post;
+	
+	$attributes = maybe_unserialize( get_post_meta($post->ID, 'product_attributes', true) );
+	if (!isset($attributes)) $attributes = array();
 	?>
 	jQuery(function(){
 		
-		// CONFIGURABLE PRODUCT PANEL
 		jQuery('button.add_configuration').live('click', function(){
 		
 			jQuery('.jigoshop_configurations').append('<div class="jigoshop_configuration">\
 				<p>\
 					<button type="button" class="remove_config button"><?php _e('Remove', 'jigoshop'); ?></button>\
 					<strong><?php _e('Variation:', 'jigoshop'); ?></strong><?php
-						
-						/*$attributes = maybe_unserialize( get_post_meta($post->ID, 'product_attributes', true) );
-						if (isset($attributes) && sizeof($attributes)>0) foreach ($attributes as $attribute) :
+						foreach ($attributes as $attribute) :
 							
-							var_dump($attribute);
+							if ( $attribute['variation']!=='yes' ) continue;
 							
-							$options = explode("\n", $attribute[1]);
-							if (sizeof($options)>0) :
-								echo '<select name="'.sanitize_title($attribute[0]).'"><option value="">'.$attribute[0].'&hellip;</option><option>'.implode('</option><option>', $options).'</option></select>\\';
-							endif;
-						endforeach;*/
+							$options = $attribute['value'];
+							
+							if (!is_array($options)) $options = explode(',', $options);
+							
+							echo '<select name="'.sanitize_title($attribute['name']).'"><option value="">'.__('Any ', 'jigoshop').$attribute['name'].'&hellip;</option><option>'.implode('</option><option>', $options).'</option></select>\\';
+
+						endforeach;
 						
 				?></p>\
 				<table cellpadding="0" cellspacing="0" class="jigoshop_configurable_attributes">\
@@ -127,21 +134,26 @@ function configurable_product_write_panel_js( $product_type ) {
 		
 		var current_field_wrapper;
 		
-		jQuery('.upload_image_button').click(function(){
+		window.send_to_editor_default = window.send_to_editor;
+
+		jQuery('.upload_image_button').live('click', function(){
 			parent = jQuery(this).parent();
 			
 			current_field_wrapper = parent;
+			
+			window.send_to_editor = window.send_to_cproduct;
 			
 			formfield = jQuery('.upload_image_src', parent).attr('name');
 			tb_show('', 'media-upload.php?type=image&amp;TB_iframe=true');
 			return false;
 		});
 
-		window.send_to_editor = function(html) {
+		window.send_to_cproduct = function(html) {
 			imgurl = jQuery('img', html).attr('src');
 			jQuery('.upload_image_src', current_field_wrapper).val(imgurl);
 			jQuery('img', current_field_wrapper).attr('src', imgurl);
 			tb_remove();
+			window.send_to_editor = window.send_to_editor_default;
 		}
 
 	});
@@ -150,3 +162,38 @@ function configurable_product_write_panel_js( $product_type ) {
 }
 add_action('product_write_panel_js', 'configurable_product_write_panel_js');
 
+/**
+ * Product Type selector
+ * 
+ * Adds this product type to the product type selector in the product options meta box
+ *
+ * @since 		1.0
+ *
+ * @param 		string $product_type Passed the current product type so that if it keeps its selected state
+ */
+function configurable_product_type_selector( $product_type ) {
+	
+	echo '<option value="configurable" '; if ($product_type=='configurable') echo 'selected="selected"'; echo '>'.__('Configurable','jigoshop').'</option>';
+
+}
+add_action('product_type_selector', 'configurable_product_type_selector');
+
+/**
+ * Process meta
+ * 
+ * Processes this product types options when a post is saved
+ *
+ * @since 		1.0
+ *
+ * @param 		array $data The $data being saved
+ * @param 		int $post_id The post id of the post being saved
+ */
+function process_product_meta_configurable( $data, $post_id ) {
+	
+	//if (isset($_POST['file_path']) && $_POST['file_path']) update_post_meta( $post_id, 'file_path', $_POST['file_path'] );
+	//if (isset($_POST['download_limit'])) update_post_meta( $post_id, 'download_limit', $_POST['download_limit'] );
+	
+	return $data;
+
+}
+add_filter('process_product_meta_configurable', 'process_product_meta_configurable', 1, 2);

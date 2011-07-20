@@ -296,6 +296,43 @@ if (!function_exists('jigoshop_grouped_add_to_cart')) {
 		<?php
 	}
 }
+if (!function_exists('jigoshop_configurable_add_to_cart')) {
+	function jigoshop_configurable_add_to_cart() {
+		
+		global $post, $_product;
+		
+		$attributes = maybe_unserialize( get_post_meta($post->ID, 'product_attributes', true) );
+		if (!isset($attributes)) $attributes = array();
+
+		?>
+		<form action="<?php echo $_product->add_to_cart_url(); ?>" class="cart" method="post">
+			
+			<table class="variations" cellspacing="0">
+				<tbody>
+				<?php
+					foreach ($attributes as $attribute) :
+								
+						if ( $attribute['variation']!=='yes' ) continue;
+						
+						$options = $attribute['value'];
+						
+						if (!is_array($options)) $options = explode(',', $options);
+						
+						$options = array_map('ucfirst', $options);
+						
+						echo '<tr><td><label for="'.sanitize_title($attribute['name']).'">'.ucfirst($attribute['name']).'</label></td><td><select id="'.sanitize_title($attribute['name']).'" name="'.sanitize_title($attribute['name']).'"><option value="">'.__('Choose an option', 'jigoshop').'&hellip;</option><option>'.implode('</option><option>', $options).'</option></select></td></tr>';
+	
+					endforeach;
+				?>
+				</tbody>
+			</table>
+			<div class="quantity"><input name="quantity" value="1" size="4" title="Qty" class="input-text qty text" maxlength="12" /></div>
+			<button type="submit" class="button-alt"><?php _e('Add to cart', 'jigoshop'); ?></button>
+			<?php do_action('jigoshop_add_to_cart_form'); ?>
+		</form>
+		<?php
+	}
+}
 
 
 /**

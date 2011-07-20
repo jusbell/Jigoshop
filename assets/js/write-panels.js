@@ -220,7 +220,7 @@ jQuery( function($){
 			if (!attribute_type) {
 				
 				// Add custom attribute row
-				jQuery('table.jigoshop_attributes tbody').append('<tr><td class="center"><button type="button" class="button move_up">&uarr;</button><button type="button" class="move_down button">&darr;</button><input type="hidden" name="attribute_position[' + size + ']" class="attribute_position" value="' + size + '" /></td><td><input type="text" name="attribute_names[' + size + ']" /><input type="hidden" name="attribute_is_taxonomy[' + size + ']" value="0" /></td><td><input type="text" name="attribute_values[' + size + ']" /></td><td class="center"><input type="checkbox" checked="checked" name="attribute_visibility[' + size + ']" value="1" /></td><td class="center"><button type="button" class="remove_row button">&times;</button></td></tr>');
+				jQuery('table.jigoshop_attributes tbody').append('<tr><td class="center"><button type="button" class="button move_up">&uarr;</button><button type="button" class="move_down button">&darr;</button><input type="hidden" name="attribute_position[' + size + ']" class="attribute_position" value="' + size + '" /></td><td><input type="text" name="attribute_names[' + size + ']" /><input type="hidden" name="attribute_is_taxonomy[' + size + ']" value="0" /></td><td><input type="text" name="attribute_values[' + size + ']" /></td><td class="center"><input type="checkbox" checked="checked" name="attribute_visibility[' + size + ']" value="1" /></td><td class="center"><input type="checkbox" name="attribute_variation[' + size + ']" value="1" /></td><td class="center"><button type="button" class="remove_row button">&times;</button></td></tr>');
 				
 			} else {
 				
@@ -238,16 +238,11 @@ jQuery( function($){
 		jQuery('button.hide_row').live('click', function(){
 			var answer = confirm("Remove this attribute?")
 			if (answer){
-				jQuery(this).parent().parent().find('select').val('');
+				jQuery(this).parent().parent().find('select, input[type=text]').val('');
 				jQuery(this).parent().parent().hide();
 				show_attribute_table();
 			}
 			return false;
-		});
-		
-		jQuery('button.add_configurable_attribute').click(function(){
-			jQuery('table.jigoshop_configurable_attributes tbody').append('<tr><td><button type="button" class="move_up button">&uarr;</button><button type="button" class="move_down button">&darr;</button></td><td><input type="text" name="configurable_attribute_names[]" /></td><td><textarea rows="3" cols="20" name="configurable_attribute_values[]"></textarea></td><td><button type="button" class="remove_row button">&times;</button></td></tr>');
-			show_attribute_table();	
 		});
 		
 		jQuery('#attributes_list button.remove_row').live('click', function(){

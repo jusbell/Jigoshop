@@ -376,7 +376,10 @@ class jigoshop_product {
 			endforeach;
 			
 			$price .= '<span class="from">' . __('From: ', 'jigoshop') . '</span>' . jigoshop_price($min_price);		
-			
+		elseif ($this->is_type('configurable')) :
+		
+			$price .= '<span class="from">' . __('From: ', 'jigoshop') . '</span>' . jigoshop_price($this->get_price());	
+		
 		else :
 			if ($this->price) :
 				if ($this->is_on_sale() && isset($this->data['regular_price'])) :

@@ -30,9 +30,9 @@ class jigoshop_cart {
 	
 	/** constructor */
 	function __construct() {
-		
+
 		add_action('init', array($this, 'init'), 1);
-		
+
 	}
 	
 	/** get class instance */
@@ -56,31 +56,36 @@ class jigoshop_cart {
 	
 	/** Gets the cart data from the PHP session */
 	function get_cart_from_session() {
-		if ( isset($_SESSION['cart']) && $_SESSION['cart'] ) :
+
+		if ( isset($_SESSION['cart']) && is_array($_SESSION['cart']) ) :
 			$cart = $_SESSION['cart'];
 			
-			foreach ($cart as $item_id => $values) :
-				$_product = &new jigoshop_product( $item_id );
+			foreach ($cart as $values) :
+				$_product = &new jigoshop_product( $values['product_id'] );
 				if ($_product->exists) :
-					self::$cart_contents[$item_id]['quantity'] = $values['quantity'];
-					self::$cart_contents[$item_id]['data'] = $_product;
-					if (isset($values['variation'])) self::$cart_contents[$item_id]['variation'] = $values['variation'];
+				
+					self::$cart_contents[] = array(
+						'product_id'	=> $values['product_id'],
+						'variation' 	=> $values['variation'],
+						'quantity' 		=> $values['quantity'],
+						'data'			=> $_product
+					);
+
 				endif;
 			endforeach;
 			
 		else :
 			self::$cart_contents = array();
 		endif;
+		
+		if (!is_array(self::$cart_contents)) self::$cart_contents = array();
 	}
 	
 	/** sets the php session data for the cart and coupon */
 	function set_session() {
 		$cart = array();
-		foreach (self::$cart_contents as $item_id => $values) :
-			$cart[$item_id]['quantity'] = $values['quantity'];
-			if (isset($values['variation'])) $cart[$item_id]['variation'] = $values['variation'];
-		endforeach;
-		$_SESSION['cart'] = $cart;
+
+		$_SESSION['cart'] = self::$cart_contents;
 		
 		$_SESSION['coupons'] = self::$applied_coupons;
 		self::calculate_totals();
@@ -92,23 +97,50 @@ class jigoshop_cart {
 		unset($_SESSION['coupons']);
 	}
 	
+	/** Check if product is in the cart */
+	function find_product_in_cart( $product_id, $variation = '' ) {
+		
+		foreach (self::$cart_contents as $cart_item_key => $cart_item) :
+			
+			if ($variation) :
+				if ($cart_item['product_id'] == $product_id && $cart_item['variation']==$variation) :
+					return $cart_item_key;
+				endif;
+			else :
+				if ($cart_item['product_id'] == $product_id) :
+					return $cart_item_key;
+				endif;
+			endif;
+			
+		endforeach;
+	}
+	
 	/**
 	 * Add a product to the cart
 	 *
 	 * @param   string	product_id	contains the id of the product to add to the cart
 	 * @param   string	quantity	contains the quantity of the item to add
 	 */
-	function add_to_cart( $product_id, $quantity = 1 ) {
-	
-		if (isset(self::$cart_contents[$product_id])) :
+	function add_to_cart( $product_id, $quantity = 1, $variation = '' ) {
 		
-			$quantity = $quantity + self::$cart_contents[$product_id]['quantity'];
-			self::$cart_contents[$product_id]['quantity'] = $quantity;
+		if ($cart_item_key = self::find_product_in_cart($product_id, $variation)) :
+			
+			$quantity = $quantity + self::$cart_contents[$index]['quantity'];
+			
+			self::$cart_contents[$cart_item_key]['quantity'] = $quantity;
 			
 		else :
-		
-			self::$cart_contents[$product_id]['quantity'] = $quantity;
-			self::$cart_contents[$product_id]['data'] = &new jigoshop_product( $product_id );
+			
+			$cart_item_key = sizeof(self::$cart_contents);
+			
+			$data = &new jigoshop_product( $product_id );
+				
+			self::$cart_contents[$cart_item_key] = array(
+				'product_id'	=> $product_id,
+				'variation' 	=> $variation,
+				'quantity' 		=> $quantity,
+				'data'			=> $data
+			);
 			
 		endif;
 		
@@ -118,14 +150,14 @@ class jigoshop_cart {
 	/**
 	 * Set the quantity for an item in the cart
 	 *
-	 * @param   string	product_id	contains the id of the product to add to the cart
+	 * @param   string	cart_item_key	contains the id of the cart item
 	 * @param   string	quantity	contains the quantity of the item
 	 */
-	function set_quantity( $product_id, $quantity = 1 ) {
+	function set_quantity( $cart_item_key, $quantity = 1 ) {
 		if ($quantity==0 || $quantity<0) :
-			unset(self::$cart_contents[$product_id]);
+			unset(self::$cart_contents[$cart_item_key]);
 		else :
-			self::$cart_contents[$product_id]['quantity'] = $quantity;
+			self::$cart_contents[$cart_item_key]['quantity'] = $quantity;
 		endif;
 		self::set_session();
 	}
@@ -147,10 +179,10 @@ class jigoshop_cart {
 	function get_cross_sells() {
 		$cross_sells = array();
 		$in_cart = array();
-		if (sizeof(self::$cart_contents)>0) : foreach (self::$cart_contents as $item_id => $values) :
+		if (sizeof(self::$cart_contents)>0) : foreach (self::$cart_contents as $cart_item_key => $values) :
 			if ($values['quantity']>0) :
 				$cross_sells = array_merge($values['data']->get_cross_sells(), $cross_sells);
-				$in_cart[] = $item_id;
+				$in_cart[] = $values['product_id'];
 			endif;
 		endforeach; endif;
 		$cross_sells = array_diff($cross_sells, $in_cart);
@@ -173,9 +205,9 @@ class jigoshop_cart {
 	}
 	
 	/** gets the url to remove an item from the cart */
-	function get_remove_url( $item_id ) {
+	function get_remove_url( $cart_item_key ) {
 		$cart_page_id = get_option('jigoshop_cart_page_id');
-		if ($cart_page_id) return jigoshop::nonce_url( 'cart', add_query_arg('remove_item', $item_id, get_permalink($cart_page_id)));
+		if ($cart_page_id) return jigoshop::nonce_url( 'cart', add_query_arg('remove_item', $cart_item_key, get_permalink($cart_page_id)));
 	}
 	
 	/** looks through the cart to see if shipping is actually required */
@@ -186,7 +218,7 @@ class jigoshop_cart {
 	
 		$needs_shipping = false;
 		
-		foreach (self::$cart_contents as $item_id => $values) :
+		foreach (self::$cart_contents as $cart_item_key => $values) :
 			$_product = $values['data'];
 			if ($_product->is_type( 'simple' )) :
 				$needs_shipping = true;
@@ -206,6 +238,27 @@ class jigoshop_cart {
 		return false;
 	}
 	
+	
+	/** Show variation info if set */
+	function get_formatted_variation( $values ) {
+		if (isset($values['variation']) && is_array($values['variation'])) :
+			
+			$return = '<dl class="variation">';
+			
+			foreach ($values['variation'] as $name => $value) :
+				
+				$return .= '<dt>'.ucfirst($name).':</dt><dd>'.ucfirst($value).'</dd>';
+				
+			endforeach;
+			
+			$return .= '</dl>';
+			
+			return $return;
+			
+		endif;
+	}
+	
+	
 	/** looks at the totals to see if payment is actually required */
 	function needs_payment() {
 		if ( self::$total > 0 ) return true;
@@ -215,7 +268,7 @@ class jigoshop_cart {
 	/** looks through the cart to check each item is in stock */
 	function check_cart_item_stock() {
 		$error = new WP_Error();
-		foreach (self::$cart_contents as $item_id => $values) :
+		foreach (self::$cart_contents as $cart_item_key => $values) :
 			$_product = $values['data'];
 			if ($_product->managing_stock()) :
 				if ($_product->is_in_stock() && $_product->has_enough_stock( $values['quantity'] )) :
@@ -252,7 +305,7 @@ class jigoshop_cart {
 		self::$discount_total = 0;
 		self::$shipping_total = 0;
 		
-		if (sizeof(self::$cart_contents)>0) : foreach (self::$cart_contents as $item_id => $values) :
+		if (sizeof(self::$cart_contents)>0) : foreach (self::$cart_contents as $cart_item_key => $values) :
 			$_product = $values['data'];
 			if ($_product->exists() && $values['quantity']>0) :
 				
@@ -313,7 +366,7 @@ class jigoshop_cart {
 				// Product Discounts
 				if (self::$applied_coupons) foreach (self::$applied_coupons as $code) :
 					$coupon = jigoshop_coupons::get_coupon($code);
-					if ($coupon['type']=='fixed_product' && in_array($item_id, $coupon['products'])) :
+					if ($coupon['type']=='fixed_product' && in_array($values['product_id'], $coupon['products'])) :
 						self::$discount_total = self::$discount_total + ( $coupon['amount'] * $values['quantity'] );
 					endif;
 				endforeach;

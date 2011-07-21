@@ -668,6 +668,20 @@ td.actions .button-alt {
   float: right;
   margin: 2px 0 0 6px;
 }
+td.product-name dl.variation {
+  margin: 0;
+}
+td.product-name dl.variation dt {
+  font-weight: bold;
+  display: inline;
+  margin: 0 4px 0 0;
+  padding: 0;
+}
+td.product-name dl.variation dd {
+  display: inline;
+  margin: 0 12px 0 0;
+  padding: 0;
+}
 td.quantity {
   min-width: 80px;
 }

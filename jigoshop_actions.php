@@ -51,7 +51,7 @@ function jigoshop_add_to_cart_action( $url = false ) {
 		elseif ($_GET['add-to-cart']=='variation') :
 			
 			// Variation add to cart
-			if (isset($_POST['quantity']) && is_array($_POST['quantity'])) :
+			if (isset($_POST['quantity']) && $_POST['quantity']) :
 				
 				$product_id = (int) $_GET['product'];
 				$quantity 	= ($_POST['quantity']) ? $_POST['quantity'] : 1;
@@ -74,7 +74,7 @@ function jigoshop_add_to_cart_action( $url = false ) {
 				if (!$all_variations_set) :
 					jigoshop::add_error( __('Please choose product options&hellip;', 'jigoshop') );
 				else :
-					jigoshop_cart::add_to_cart($item, $quantity);
+					jigoshop_cart::add_to_cart($product_id, $quantity, $variations);
 					jigoshop::add_message( sprintf(__('<a href="%s" class="button">View Cart &rarr;</a> Product successfully added to your basket.', 'jigoshop'), jigoshop_cart::get_cart_url()) );
 				endif;
 			

@@ -150,6 +150,7 @@ class jigoshop_product {
 		$this->get_post_data();
 		return apply_filters('jigoshop_product_title', $this->post->post_title, $this);
 	}
+
 	
 	/** Get the add to url */
 	function add_to_cart_url() {
@@ -413,12 +414,12 @@ class jigoshop_product {
 	
 	/** Returns the upsell product ids */
 	function get_upsells() {
-		return (array) $this->data['upsell_ids'];
+		if (isset($this->data['upsell_ids'])) return (array) $this->data['upsell_ids']; else return array();
 	}
 	
 	/** Returns the crosssell product ids */
 	function get_cross_sells() {
-		return (array) $this->data['crosssell_ids'];
+		if (isset($this->data['crosssell_ids'])) return (array) $this->data['crosssell_ids']; else return array();
 	}
 	
 	/** Returns the product categories */

@@ -54,7 +54,7 @@ function jigoshop_add_to_cart_action( $url = false ) {
 			if (isset($_POST['quantity']) && is_array($_POST['quantity'])) :
 				
 				$product_id = (int) $_GET['product'];
-				$quantity 	= $_POST['quantity'] else $quantity = 1;;
+				$quantity 	= ($_POST['quantity']) ? $_POST['quantity'] : 1;
 				$attributes = (array) maybe_unserialize( get_post_meta($product_id, 'product_attributes', true) );
 				$variations = array();
 				$all_variations_set = true;

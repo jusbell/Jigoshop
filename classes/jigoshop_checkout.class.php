@@ -658,7 +658,17 @@ class jigoshop_checkout {
 		if (isset( $this->posted[$input] ) && !empty($this->posted[$input])) :
 			return $this->posted[$input];
 		elseif (is_user_logged_in()) :
-			return get_user_meta( get_current_user_id(), $input, true );
+			if (get_user_meta( get_current_user_id(), $input, true )) return get_user_meta( get_current_user_id(), $input, true );
+			
+			$current_user = wp_get_current_user();
+
+			switch ( $input ) :
+				
+				case "billing-email" :
+					return $current_user->user_email;
+				break;
+				
+			endswitch;
 		endif;
 	}
 }

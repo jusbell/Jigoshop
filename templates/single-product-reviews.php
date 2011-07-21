@@ -7,6 +7,7 @@
 		LEFT JOIN $wpdb->comments ON $wpdb->commentmeta.comment_id = $wpdb->comments.comment_ID
 		WHERE meta_key = 'rating'
 		AND comment_post_ID = $post->ID
+		AND comment_approved = '1'
 		AND meta_value > 0
 	");
 	
@@ -15,6 +16,7 @@
 		LEFT JOIN $wpdb->comments ON $wpdb->commentmeta.comment_id = $wpdb->comments.comment_ID
 		WHERE meta_key = 'rating'
 		AND comment_post_ID = $post->ID
+		AND comment_approved = '1'
 	");
 	
 	if ( $count>0 ) :

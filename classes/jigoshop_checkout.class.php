@@ -523,7 +523,7 @@ class jigoshop_checkout {
 					// Cart items
 					$order_items = array();
 					
-					foreach (jigoshop_cart::$cart_contents as $item_id => $values) :
+					foreach (jigoshop_cart::$cart_contents as $cart_item_key => $values) :
 						
 						$_product = $values['data'];
 			
@@ -534,7 +534,7 @@ class jigoshop_checkout {
 						endif;
 						
 						$order_items[] = array(
-					 		'id' 		=> $item_id,
+					 		'id' 		=> $values['product_id'],
 					 		'name' 		=> $_product->get_title(),
 					 		'qty' 		=> (int) $values['quantity'],
 					 		'cost' 		=> $_product->get_price_excluding_tax(),

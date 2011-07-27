@@ -79,6 +79,16 @@ class jigoshop {
 		if(self::$plugin_path) return self::$plugin_path;
 		return self::$plugin_path = WP_PLUGIN_DIR . "/" . plugin_basename( dirname(dirname(__FILE__))); 
 	 }
+	 
+	/**
+	 * Return the URL with https if SSL is on
+	 *
+	 * @return  string	url
+	 */
+	public static function force_ssl( $url ) { 	
+		if (is_ssl()) $url = str_replace('http:', 'https:', $url);
+		return $url;
+	 }
 	
 	/**
 	 * Get a var

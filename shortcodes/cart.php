@@ -14,28 +14,6 @@ function jigoshop_cart( $atts ) {
 		$coupon_code = stripslashes(trim($_POST['coupon_code']));
 		jigoshop_cart::add_discount($coupon_code);
 
-	// Remove from cart
-	elseif ( isset($_GET['remove_item']) && $_GET['remove_item'] > 0  && jigoshop::verify_nonce('cart', '_GET')) :
-	
-		jigoshop_cart::set_quantity( $_GET['remove_item'], 0 );
-		
-		jigoshop::add_message( __('Cart updated.', 'jigoshop') );
-	
-	// Update Cart
-	elseif (isset($_POST['update_cart']) && $_POST['update_cart']  && jigoshop::verify_nonce('cart')) :
-		
-		$cart_totals = $_POST['cart'];
-		
-		if (sizeof(jigoshop_cart::$cart_contents)>0) : 
-			foreach (jigoshop_cart::$cart_contents as $cart_item_key => $values) :
-				
-				if (isset($cart_totals[$cart_item_key]['qty'])) jigoshop_cart::set_quantity( $cart_item_key, $cart_totals[$cart_item_key]['qty'] );
-				
-			endforeach;
-		endif;
-		
-		jigoshop::add_message( __('Cart updated.', 'jigoshop') );
-	
 	// Update Shipping
 	elseif (isset($_POST['calc_shipping']) && $_POST['calc_shipping'] && jigoshop::verify_nonce('cart')) :
 

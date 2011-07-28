@@ -153,12 +153,13 @@ class jigoshop_cart {
 	 * @param   string	cart_item_key	contains the id of the cart item
 	 * @param   string	quantity	contains the quantity of the item
 	 */
-	function set_quantity( $cart_item_key, $quantity = 1 ) {
+	function set_quantity( $cart_item, $quantity = 1 ) {
 		if ($quantity==0 || $quantity<0) :
-			unset(self::$cart_contents[$cart_item_key]);
+			unset(self::$cart_contents[$cart_item]);
 		else :
-			self::$cart_contents[$cart_item_key]['quantity'] = $quantity;
+			self::$cart_contents[$cart_item]['quantity'] = $quantity;
 		endif;
+
 		self::set_session();
 	}
 	
@@ -375,7 +376,7 @@ class jigoshop_cart {
 		endforeach; endif;
 		
 		// Cart Shipping
-		if (self::needs_shipping()) jigoshop_shipping::calculate_shipping();
+		if (self::needs_shipping()) jigoshop_shipping::calculate_shipping(); else jigoshop_shipping::reset_shipping();
 		
 		self::$shipping_total = jigoshop_shipping::$shipping_total;
 		

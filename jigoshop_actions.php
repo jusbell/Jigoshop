@@ -30,6 +30,42 @@ function jigoshop_shop_page_archive_redirect() {
 }
 
 /**
+ * Remove from cart/update
+ **/
+add_action( 'init', 'jigoshop_update_cart_action' );
+
+function jigoshop_update_cart_action() {
+
+	// Remove from cart
+	if ( isset($_GET['remove_item']) && is_numeric($_GET['remove_item'])  && jigoshop::verify_nonce('cart', '_GET')) :
+	
+		jigoshop_cart::set_quantity( $_GET['remove_item'], 0 );
+		
+		// Re-calc price
+		jigoshop_cart::calculate_totals();
+			
+		jigoshop::add_message( __('Cart updated.', 'jigoshop') );
+	
+	// Update Cart
+	elseif (isset($_POST['update_cart']) && $_POST['update_cart']  && jigoshop::verify_nonce('cart')) :
+		
+		$cart_totals = $_POST['cart'];
+		
+		if (sizeof(jigoshop_cart::$cart_contents)>0) : 
+			foreach (jigoshop_cart::$cart_contents as $cart_item_key => $values) :
+				
+				if (isset($cart_totals[$cart_item_key]['qty'])) jigoshop_cart::set_quantity( $cart_item_key, $cart_totals[$cart_item_key]['qty'] );
+				
+			endforeach;
+		endif;
+		
+		jigoshop::add_message( __('Cart updated.', 'jigoshop') );
+		
+	endif;
+
+}
+
+/**
  * Add to cart
  **/
 add_action( 'init', 'jigoshop_add_to_cart_action' );

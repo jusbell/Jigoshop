@@ -108,5 +108,11 @@ class jigoshop_shipping {
 		endif;
 		
 	}
-
+	
+	function reset_shipping() {
+		self::$shipping_total = 0;
+		self::$shipping_tax = 0;
+		self::$shipping_label = null;
+	}
+	
 }

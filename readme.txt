@@ -140,6 +140,7 @@ We have a <a href="http://jigoshop.com/forum" title="Jigoshop support forum">com
 * Grouped products can contain downloadable, simple, or virtual products
 * Changed mail from/to for store
 * Download limiter fix
+* Settings strip slashes
 
 = 0.9.8.1 =
 * Changes to allow new product types to be added by plugins

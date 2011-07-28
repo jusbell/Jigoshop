@@ -25,41 +25,59 @@ function configurable_product_type_options() {
 	<div id="configurable_product_options" class="panel">
 		
 		<div class="jigoshop_configurations">
-			<div class="jigoshop_configuration">
-				<p>
-					<button type="button" class="remove_config button"><?php _e('Remove', 'jigoshop'); ?></button>
-					<strong><?php _e('Variation:', 'jigoshop'); ?></strong>
-					<?php
-						foreach ($attributes as $attribute) :
-							
-							if ( $attribute['variation']!=='yes' ) continue;
-							
-							$options = $attribute['value'];
-							
-							if (!is_array($options)) $options = explode(',', $options);
-							
-							echo '<select name="'.sanitize_title($attribute['name']).'"><option value="">'.__('Any ', 'jigoshop').$attribute['name'].'&hellip;</option><option>'.implode('</option><option>', $options).'</option></select>';
-
-						endforeach;
-					?>
-				</p>
-				<table cellpadding="0" cellspacing="0" class="jigoshop_configurable_attributes">
-					<tbody>	
-						<tr>
-							<td class="upload_image">
-								<img src="<?php echo jigoshop::plugin_url().'/assets/images/placeholder.png'; ?>" width="60px" height="60px" />
-								<input type="hidden" name="upload_image" class="upload_image_src" value="" /><input type="button" class="upload_image_button button" value="<?php _e('Product Image', 'jigoshop'); ?>" />
-							</td>
-							<td><label><?php _e('SKU:', 'jigoshop'); ?></label><input type="text" size="5" name="configurable_sku[]" /></td>
-							<td><label><?php _e('Weight', 'jigoshop').' ('.get_option('jigoshop_weight_unit').'):'; ?></label><input type="text" size="5" name="configurable_weight[]" /></td>
-							<td><label><?php _e('Stock Qty:', 'jigoshop'); ?></label><input type="text" size="5" name="configurable_stock[]" /></td>
-							<td><label><?php _e('Price variation:', 'jigoshop'); ?></label><input type="text" size="5" name="configurable_price[]" placeholder="<?php _e('Price (e.g. 5.99, -2.99)', 'jigoshop'); ?>" /></td>
-						</tr>		
-					</tbody>
-				</table>
-			</div>
+			<?php
+			$args = array(
+				'post_type'	=> 'product_variation',
+				'post_status' => array('private', 'publish'),
+				'numberposts' => -1,
+				'orderby' => 'title',
+				'order' => 'asc',
+				'post_parent' => $post->ID
+			);
+			$variations = get_posts($args);
+			if ($variations) foreach ($variations as $variation) :
+			
+				$variation_data = get_post_custom( $variation->ID );
+				if (isset($variation_data['_thumbnail_id'][0])) :
+					$image = wp_get_attachment_url( $variation_data['_thumbnail_id'][0] );
+				else :
+					$image = jigoshop::plugin_url().'/assets/images/placeholder.png';
+				endif;
+				?>
+				<div class="jigoshop_configuration">
+					<p>
+						<button type="button" class="remove_config button"><?php _e('Remove', 'jigoshop'); ?></button>
+						<strong>#<?php echo $variation->ID; ?> &mdash; <?php _e('Variation:', 'jigoshop'); ?></strong>
+						<?php
+							foreach ($attributes as $attribute) :
+								
+								if ( $attribute['variation']!=='yes' ) continue;
+								
+								$options = $attribute['value'];
+								
+								if (!is_array($options)) $options = explode(',', $options);
+								
+								echo '<select name="'.sanitize_title($attribute['name']).'"><option value="">'.__('Any ', 'jigoshop').$attribute['name'].'&hellip;</option><option>'.implode('</option><option>', $options).'</option></select>';
+	
+							endforeach;
+						?>
+					</p>
+					<table cellpadding="0" cellspacing="0" class="jigoshop_configurable_attributes">
+						<tbody>	
+							<tr>
+								<td class="upload_image"><img src="<?php echo $image ?>" width="60px" height="60px" /><input type="hidden" name="upload_image_id[]" class="upload_image_id" value="<?php if (isset($variation_data['_thumbnail_id'][0])) echo $variation_data['_thumbnail_id'][0]; ?>" /><input type="button" class="upload_image_button button" value="<?php _e('Product Image', 'jigoshop'); ?>" /></td>
+								<td><label><?php _e('SKU:', 'jigoshop'); ?></label><input type="text" size="5" name="configurable_sku[]" value="<?php if (isset($variation_data['SKU'][0])) echo $variation_data['SKU'][0]; ?>" /></td>
+								<td><label><?php _e('Weight', 'jigoshop').' ('.get_option('jigoshop_weight_unit').'):'; ?></label><input type="text" size="5" name="configurable_weight[]" value="<?php if (isset($variation_data['weight'][0])) echo $variation_data['weight'][0]; ?>" /></td>
+								<td><label><?php _e('Stock Qty:', 'jigoshop'); ?></label><input type="text" size="5" name="configurable_stock[]" value="<?php if (isset($variation_data['stock'][0])) echo $variation_data['stock'][0]; ?>" /></td>
+								<td><label><?php _e('Price variation:', 'jigoshop'); ?></label><input type="text" size="5" name="configurable_price[]" placeholder="<?php _e('e.g. 5.99, -2.99', 'jigoshop'); ?>" value="<?php if (isset($variation_data['price'][0])) echo $variation_data['price'][0]; ?>" /></td>
+								<td><label><?php _e('Enabled', 'jigoshop'); ?></label><input type="checkbox" class="checkbox" name="configurable_enabled[]" <?php checked($variation->post_status, 'publish'); ?> /></td>
+							</tr>		
+						</tbody>
+					</table>
+				</div>
+			<?php endforeach; ?>
 		</div>
-		<p class="description"><?php _e('Add (optional) pricing/inventory for product variations. You must save your product attributes in the "Product Data" panel first for them to be available.', 'jigoshop'); ?></p>
+		<p class="description"><?php _e('Add (optional) pricing/inventory for product variations. You must save your product attributes in the "Product Data" panel to make them available for selection.', 'jigoshop'); ?></p>
 
 		<button type="button" class="button button-primary add_configuration"><?php _e('Add Configuration', 'jigoshop'); ?></button>
 		
@@ -99,7 +117,7 @@ function configurable_product_write_panel_js() {
 							
 							if (!is_array($options)) $options = explode(',', $options);
 							
-							echo '<select name="'.sanitize_title($attribute['name']).'"><option value="">'.__('Any ', 'jigoshop').$attribute['name'].'&hellip;</option><option>'.implode('</option><option>', $options).'</option></select>\\';
+							echo '<select name="'.sanitize_title($attribute['name']).'[]"><option value="">'.__('Any ', 'jigoshop').$attribute['name'].'&hellip;</option><option>'.implode('</option><option>', $options).'</option></select>\\';
 
 						endforeach;
 						
@@ -109,7 +127,7 @@ function configurable_product_write_panel_js() {
 						<tr>\
 							<td class="upload_image">\
 								<img src="<?php echo jigoshop::plugin_url().'/assets/images/placeholder.png'; ?>" width="60px" height="60px" />\
-								<input type="hidden" name="upload_image" class="upload_image_src" value="" /><input type="button" class="upload_image_button button" value="<?php _e('Product Image', 'jigoshop'); ?>" />\
+								<input type="hidden" name="upload_image" class="upload_image_id" value="" /><input type="button" class="upload_image_button button" value="<?php _e('Product Image', 'jigoshop'); ?>" />\
 							</td>\
 							<td><label><?php _e('SKU:', 'jigoshop'); ?></label><input type="text" size="5" name="configurable_sku[]" /></td>\
 							<td><label><?php _e('Weight', 'jigoshop').' ('.get_option('jigoshop_weight_unit').'):'; ?></label><input type="text" size="5" name="configurable_weight[]" /></td>\
@@ -143,14 +161,19 @@ function configurable_product_write_panel_js() {
 			
 			window.send_to_editor = window.send_to_cproduct;
 			
-			formfield = jQuery('.upload_image_src', parent).attr('name');
+			formfield = jQuery('.upload_image_id', parent).attr('name');
 			tb_show('', 'media-upload.php?type=image&amp;TB_iframe=true');
 			return false;
 		});
 
 		window.send_to_cproduct = function(html) {
+			
 			imgurl = jQuery('img', html).attr('src');
-			jQuery('.upload_image_src', current_field_wrapper).val(imgurl);
+			imgclass = jQuery('img', html).attr('class');
+			imgid = parseInt(imgclass.replace(/\D/g, ''), 10);
+			
+			jQuery('.upload_image_id', current_field_wrapper).val(imgid);
+
 			jQuery('img', current_field_wrapper).attr('src', imgurl);
 			tb_remove();
 			window.send_to_editor = window.send_to_editor_default;
@@ -190,8 +213,70 @@ add_action('product_type_selector', 'configurable_product_type_selector');
  */
 function process_product_meta_configurable( $data, $post_id ) {
 	
-	//if (isset($_POST['file_path']) && $_POST['file_path']) update_post_meta( $post_id, 'file_path', $_POST['file_path'] );
-	//if (isset($_POST['download_limit'])) update_post_meta( $post_id, 'download_limit', $_POST['download_limit'] );
+	if (isset($_POST['configurable_sku'])) :
+		
+		$configurable_post_id 	= $_POST['configurable_post_id'];
+		$configurable_sku 		= $_POST['configurable_sku'];
+		$configurable_weight	= $_POST['configurable_weight'];
+		$configurable_stock 	= $_POST['configurable_stock'];
+		$configurable_price 	= $_POST['configurable_price'];
+		$upload_image_id		= $_POST['upload_image_id'];
+		if (isset($_POST['configurable_enabled'])) $configurable_enabled = $_POST['configurable_enabled'];
+		
+		$attributes = maybe_unserialize( get_post_meta($post_id, 'product_attributes', true) );
+		if (!isset($attributes)) $attributes = array();
+
+		for ($i=0; $i<sizeof($configurable_sku); $i++) :
+			
+			$variation_id = $configurable_post_id[$i];
+
+			// Enabled or disabled
+			if (isset($configurable_enabled[$i])) $post_status = 'publish'; else $post_status = 'private';
+			
+			// Update or Add post
+			if (!$variation_id) :
+				
+				$variation = array(
+					'post_title' => 'Product #' . $post_id . ' Variation',
+					'post_content' => '',
+					'post_status' => $post_status,
+					'post_author' => get_current_user_id(),
+					'post_parent' => $post_id,
+					'post_type' => 'product_variation'
+				);
+				$variation_id = wp_insert_post( $variation );
+			
+			else :
+			
+				$variation = array();
+				$variation['ID'] = $variation_id;
+				$variation['post_status'] = $post_status;
+				wp_update_post( $variation );
+			
+			endif;
+			
+			// Update post meta
+			update_post_meta( $variation_id, 'SKU', $configurable_sku[$i] );
+			update_post_meta( $variation_id, 'price', $configurable_price[$i] );
+			update_post_meta( $variation_id, 'weight', $configurable_weight[$i] );
+			update_post_meta( $variation_id, 'stock', $configurable_stock[$i] );
+			
+			// Update taxonomies
+			foreach ($attributes as $attribute) :
+							
+				if ( $attribute['variation']!=='yes' ) continue;
+				
+				$value = $_POST[ sanitize_title($attribute['name']) ][$i];
+				
+				if ($value) update_post_meta( $variation_id, 'tax_' . sanitize_title($attribute['name']), $value );
+
+			endforeach;
+			
+			// Update featured post image
+			update_post_meta( $variation_id, "_thumbnail_id", $upload_image_id[$i] );
+		 	
+		 endfor; 
+	endif;
 	
 	return $data;
 

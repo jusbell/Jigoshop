@@ -713,7 +713,7 @@ a.tips {
   width: 50%;
   float: left;
 }
-.jigoshop_options_panel .checkbox {
+.jigoshop_options_panel .checkbox, table.jigoshop_configurable_attributes .checkbox {
   vertical-align: middle;
   margin: 7px 0;
 }
@@ -855,15 +855,17 @@ div.multi_select_products_wrapper {
   color: #999;
   font-size: 10px;
   text-transform: uppercase;
-  text-align: right;
-  float: left;
-  width: 36%;
-  margin-right: 2%;
-  line-height: 30px;
+  text-align: left;
+  display: block;
+  line-height: 16px;
 }
 .jigoshop_configuration table td input {
   float: left;
-  width: 60%;
+  width: 100%;
+}
+.jigoshop_configuration table td.upload_image {
+  width: 1%;
+  white-space: nowrap;
 }
 .jigoshop_configuration table td.upload_image img {
   float: none;

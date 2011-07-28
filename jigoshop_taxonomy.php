@@ -129,6 +129,36 @@ function jigoshop_post_type() {
 		)
 	);
 	
+	register_post_type( "product_variation",
+		array(
+			'labels' => array(
+				'name' => __( 'Variations', 'jigoshop' ),
+				'singular_name' => __( 'Variation', 'jigoshop' ),
+				'add_new' => __( 'Add Variation', 'jigoshop' ),
+				'add_new_item' => __( 'Add New Variation', 'jigoshop' ),
+				'edit' => __( 'Edit', 'jigoshop' ),
+				'edit_item' => __( 'Edit Variation', 'jigoshop' ),
+				'new_item' => __( 'New Variation', 'jigoshop' ),
+				'view' => __( 'View Variation', 'jigoshop' ),
+				'view_item' => __( 'View Variation', 'jigoshop' ),
+				'search_items' => __( 'Search Variations', 'jigoshop' ),
+				'not_found' => __( 'No Variations found', 'jigoshop' ),
+				'not_found_in_trash' => __( 'No Variations found in trash', 'jigoshop' ),
+				'parent' => __( 'Parent Variation', 'jigoshop' )
+			),
+			'public' => true,
+			'show_ui' => true,
+			'capability_type' => 'post',
+			'publicly_queryable' => true,
+			'exclude_from_search' => true,
+			'hierarchical' => false,
+			'rewrite' => false,
+			'query_var' => true,			
+			'supports' => array( 'title', 'editor', 'custom-fields' ),
+			'show_in_nav_menus' => false,
+		)
+	);
+	
     register_taxonomy( 'product_type',
         array('product'),
         array(

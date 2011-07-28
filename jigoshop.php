@@ -118,6 +118,22 @@ if (!isset($_SERVER['REQUEST_URI'])) {
 }
 
 /**
+ * Mail from name/email
+ **/
+add_filter( 'wp_mail_from', 'jigoshop_mail_from' );
+add_filter( 'wp_mail_from_name', 'jigoshop_mail_from_name' );
+
+function jigoshop_mail_from_name( $name ) {
+	$name = get_bloginfo('name');
+	$name = esc_attr($name);
+	return $name;
+}
+function jigoshop_mail_from( $email ) {
+	$email = get_option('admin_email');
+	return $email;
+}
+
+/**
  * Support for Import/Export
  * 
  * WordPress import should work - however, it fails to import custom product attribute taxonomies.

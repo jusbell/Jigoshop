@@ -19,7 +19,7 @@ function jigoshop_cart( $atts ) {
 
 		unset($_SESSION['_chosen_method_id']);
 		$country 	= $_POST['calc_shipping_country'];
-		$state 	= $_POST['calc_shipping_state'];
+		$state 		= $_POST['calc_shipping_state'];
 		
 		$postcode 	= $_POST['calc_shipping_postcode'];
 		

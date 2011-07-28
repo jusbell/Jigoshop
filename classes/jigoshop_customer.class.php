@@ -125,7 +125,7 @@ class jigoshop_customer {
 	}
 	
 	/** Sets session data for the location */
-	public static function set_shipping_location( $country, $state, $postcode = '' ) {
+	public static function set_shipping_location( $country, $state = '', $postcode = '' ) {
 		$data = (array) $_SESSION['customer'];
 		
 		$data['shipping_country'] = $country;

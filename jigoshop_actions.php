@@ -42,9 +42,14 @@ function jigoshop_update_cart_action() {
 		jigoshop_cart::set_quantity( $_GET['remove_item'], 0 );
 		
 		// Re-calc price
-		jigoshop_cart::calculate_totals();
+		//jigoshop_cart::calculate_totals();
 			
 		jigoshop::add_message( __('Cart updated.', 'jigoshop') );
+		
+		if ( isset($_SERVER['HTTP_REFERER'])) :
+			wp_safe_redirect($_SERVER['HTTP_REFERER']);
+			exit;
+		endif;
 	
 	// Update Cart
 	elseif (isset($_POST['update_cart']) && $_POST['update_cart']  && jigoshop::verify_nonce('cart')) :

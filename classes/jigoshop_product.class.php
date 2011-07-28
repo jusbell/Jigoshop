@@ -378,6 +378,9 @@ class jigoshop_product {
 		
 		endif;
 		
+		//var_dump($tax_amount);
+		//var_dump($price);
+		
 		return $price;
 	}
 	

@@ -416,7 +416,7 @@ function jigoshop_downloadable_product_permissions( $order_id ) {
 					'product_id' => $_product->id, 
 					'user_id' => $order->user_id,
 					'user_email' => $user_email,
-					'order_key' => $order->order_key.'3',
+					'order_key' => $order->order_key,
 					'downloads_remaining' => $limit
 				), array( 
 					'%s', 

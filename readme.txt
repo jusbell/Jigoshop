@@ -144,6 +144,7 @@ We have a <a href="http://jigoshop.com/forum" title="Jigoshop support forum">com
 * Moved update/remove from cart code so totals are updated and shipping is updated
 * Fixed 'needs shipping' for downloadable products
 * Made my account downloads respect order status
+* Filter for ship to billing defaults
 
 = 0.9.8.1 =
 * Changes to allow new product types to be added by plugins

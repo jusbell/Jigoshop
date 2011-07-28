@@ -113,7 +113,9 @@ class jigoshop_checkout {
 		if (jigoshop_cart::needs_shipping() && !jigoshop_cart::ship_to_billing_address_only()) :
 			
 			echo '<p class="form-row" id="shiptobilling"><input class="input-checkbox" ';
-			if ($this->get_value('shiptobilling') || !$_POST) echo 'checked="checked" '; 
+			
+			if (!$_POST) $shiptobilling = apply_filters('shiptobilling_default', 1); else $shiptobilling = $this->get_value('shiptobilling');
+			if ($shiptobilling) echo 'checked="checked" '; 
 			echo 'type="checkbox" name="shiptobilling" /> <label for="shiptobilling" class="checkbox">'.__('Ship to same address?', 'jigoshop').'</label></p>';
 			
 			echo '<h3>'.__('Shipping Address', 'jigoshop').'</h3>';

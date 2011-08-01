@@ -62,7 +62,9 @@ class jigoshop_product {
 		
 		$this->children = array();
 		
-		if ( $children_products =& get_children( 'post_parent='.$id.'&post_type=product&orderby=menu_order&order=ASC' ) ) :
+		if ($this->is_type('variable')) $child_post_type = 'product_variation'; else $child_post_type = 'product';
+		
+		if ( $children_products =& get_children( 'post_parent='.$id.'&post_type='.$child_post_type.'&orderby=menu_order&order=ASC' ) ) :
 			if ($children_products) foreach ($children_products as $child) :
 				$child->product = &new jigoshop_product( $child->ID );
 			endforeach;
@@ -157,7 +159,7 @@ class jigoshop_product {
 		if ( $this->has_child() ) :
 			$url = add_query_arg('add-to-cart', 'group');
 			$url = add_query_arg('product', $this->id, $url);
-		elseif ($this->is_type('configurable')) :
+		elseif ($this->is_type('variable')) :
 			$url = add_query_arg('add-to-cart', 'variation');
 			$url = add_query_arg('product', $this->id, $url);
 		else :
@@ -399,7 +401,7 @@ class jigoshop_product {
 			endforeach;
 			
 			$price .= '<span class="from">' . __('From: ', 'jigoshop') . '</span>' . jigoshop_price($min_price);		
-		elseif ($this->is_type('configurable')) :
+		elseif ($this->is_type('variable')) :
 		
 			$price .= '<span class="from">' . __('From: ', 'jigoshop') . '</span>' . jigoshop_price($this->get_price());	
 		

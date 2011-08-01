@@ -73,7 +73,7 @@ function jigoshop_product_data( $data ) {
 		$product_type = stripslashes( $_POST['product-type'] );
 		switch($product_type) :
 			case "grouped" :
-			case "configurable" :
+			case "variable" :
 				$data['post_parent'] = 0;
 			break;
 		endswitch;

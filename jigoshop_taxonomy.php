@@ -156,6 +156,7 @@ function jigoshop_post_type() {
 			'query_var' => true,			
 			'supports' => array( 'title', 'editor', 'custom-fields' ),
 			'show_in_nav_menus' => false,
+			'show_in_menu' => 'edit.php?post_type=product'
 		)
 	);
 	

@@ -133,7 +133,7 @@ jQuery( function($){
 		$('#'+select_val+'_product_options').show();
 		
 		// Show option
-		if (select_val=='configurable') {
+		if (select_val=='variable') {
 			jQuery('.inventory_tab, .pricing_tab').show();
 			jQuery('.menu_order_field, .parent_id_field').val('').hide();
 		} else if (select_val=='simple') {
@@ -202,7 +202,7 @@ jQuery( function($){
 		
 		// Show
 		function show_attribute_table() {
-			jQuery('table.jigoshop_attributes, table.jigoshop_configurable_attributes').each(function(){
+			jQuery('table.jigoshop_attributes, table.jigoshop_variable_attributes').each(function(){
 				if (jQuery('tbody tr', this).size()==0) 
 					jQuery(this).parent().hide();
 				else 

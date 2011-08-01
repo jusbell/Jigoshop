@@ -296,8 +296,8 @@ if (!function_exists('jigoshop_grouped_add_to_cart')) {
 		<?php
 	}
 }
-if (!function_exists('jigoshop_configurable_add_to_cart')) {
-	function jigoshop_configurable_add_to_cart() {
+if (!function_exists('jigoshop_variable_add_to_cart')) {
+	function jigoshop_variable_add_to_cart() {
 		
 		global $post, $_product;
 		

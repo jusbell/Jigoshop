@@ -305,7 +305,7 @@ if (!function_exists('jigoshop_variable_add_to_cart')) {
 		if (!isset($attributes)) $attributes = array();
 
 		?>
-		<form action="<?php echo $_product->add_to_cart_url(); ?>" class="cart" method="post">
+		<form action="<?php echo $_product->add_to_cart_url(); ?>" class="variations_form cart" method="post">
 			
 			<table class="variations" cellspacing="0">
 				<tbody>
@@ -318,13 +318,15 @@ if (!function_exists('jigoshop_variable_add_to_cart')) {
 						
 						if (!is_array($options)) $options = explode(',', $options);
 						
-						echo '<tr><td><label for="'.sanitize_title($attribute['name']).'">'.ucfirst($attribute['name']).'</label></td><td><select id="'.sanitize_title($attribute['name']).'" name="option_'.sanitize_title($attribute['name']).'"><option value="">'.__('Choose an option', 'jigoshop').'&hellip;</option><option>'.implode('</option><option>', $options).'</option></select></td></tr>';
+						echo '<tr><td><label for="'.sanitize_title($attribute['name']).'">'.ucfirst($attribute['name']).'</label></td><td><select id="'.sanitize_title($attribute['name']).'" name="tax_'.sanitize_title($attribute['name']).'"><option value="">'.__('Choose an option', 'jigoshop').'&hellip;</option><option>'.implode('</option><option>', $options).'</option></select></td></tr>';
 	
 					endforeach;
 				?>
 				</tbody>
 			</table>
+			<div class="single_variation"></div>
 			<div class="variations_button" style="display:none;">
+				
 				<div class="quantity"><input name="quantity" value="1" size="4" title="Qty" class="input-text qty text" maxlength="12" /></div>
 				<button type="submit" class="button-alt"><?php _e('Add to cart', 'jigoshop'); ?></button>
 			</div>

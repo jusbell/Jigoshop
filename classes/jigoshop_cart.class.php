@@ -61,11 +61,18 @@ class jigoshop_cart {
 			$cart = $_SESSION['cart'];
 			
 			foreach ($cart as $values) :
-				$_product = &new jigoshop_product( $values['product_id'] );
+			
+				if ($values['variation_id']>0) :
+					$_product = &new jigoshop_product_variation($values['variation_id']);
+				else :
+					$_product = &new jigoshop_product($values['product_id']);
+				endif;
+				
 				if ($_product->exists) :
 				
 					self::$cart_contents[] = array(
 						'product_id'	=> $values['product_id'],
+						'variation_id'	=> $values['variation_id'],
 						'variation' 	=> $values['variation'],
 						'quantity' 		=> $values['quantity'],
 						'data'			=> $_product
@@ -102,7 +109,7 @@ class jigoshop_cart {
 		
 		foreach (self::$cart_contents as $cart_item_key => $cart_item) :
 			
-			if ($variation) :
+			if ($variation) :				
 				if ($cart_item['product_id'] == $product_id && $cart_item['variation']==$variation) :
 					return $cart_item_key;
 				endif;
@@ -121,13 +128,15 @@ class jigoshop_cart {
 	 * @param   string	product_id	contains the id of the product to add to the cart
 	 * @param   string	quantity	contains the quantity of the item to add
 	 */
-	function add_to_cart( $product_id, $quantity = 1, $variation = '' ) {
+	function add_to_cart( $product_id, $quantity = 1, $variation = '', $variation_id = '' ) {
 		
-		if ($cart_item_key = self::find_product_in_cart($product_id, $variation)) :
+		$found_cart_item_key = self::find_product_in_cart($product_id, $variation);
+		
+		if (is_numeric($found_cart_item_key)) :
 			
-			$quantity = $quantity + self::$cart_contents[$index]['quantity'];
+			$quantity = $quantity + self::$cart_contents[$found_cart_item_key]['quantity'];
 			
-			self::$cart_contents[$cart_item_key]['quantity'] = $quantity;
+			self::$cart_contents[$found_cart_item_key]['quantity'] = $quantity;
 			
 		else :
 			
@@ -137,6 +146,7 @@ class jigoshop_cart {
 				
 			self::$cart_contents[$cart_item_key] = array(
 				'product_id'	=> $product_id,
+				'variation_id'	=> $variation_id,
 				'variation' 	=> $variation,
 				'quantity' 		=> $quantity,
 				'data'			=> $data
@@ -248,7 +258,7 @@ class jigoshop_cart {
 			
 			foreach ($values['variation'] as $name => $value) :
 				
-				$return .= '<dt>'.ucfirst($name).':</dt><dd>'.ucfirst($value).'</dd>';
+				$return .= '<dt>'.ucfirst(str_replace('tax_', '', $name)).':</dt><dd>'.ucfirst($value).'</dd>';
 				
 			endforeach;
 			

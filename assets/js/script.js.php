@@ -3,7 +3,7 @@
 		define('WP_INSTALLING', true); // Prevent all plugins loading!! This is a nasty hack, but it does make the file load much faster.
 		$root = dirname(dirname(dirname(dirname(dirname(dirname(__FILE__))))));
 		require_once( $root.'/wp-load.php' );
-		require_once( $root.'/wp-includes/wp-db.php' );
+		//require_once( $root.'/wp-includes/wp-db.php' );
 		require_once( dirname(dirname(dirname(__FILE__))).'/jigoshop.php' );
 	endif;
 	header("Content-type: text/javascript"); 
@@ -159,8 +159,37 @@ jQuery(function(){
 			if (jQuery(this).val()=="") not_set = true;
 		});
 		
+		jQuery('.variations_button, .single_variation').slideUp();
+		
 		if (!not_set) {
-			jQuery('.variations_button').slideDown();
+			
+			jQuery('.variations').block({ message: null, overlayCSS: { background: '#fff url(<?php echo jigoshop::plugin_url(); ?>/assets/images/ajax-loader.gif) no-repeat center', opacity: 0.6 } });
+			
+			var data = {
+				action: 		'jigoshop_get_variation',
+				variation_data: jQuery('form.variations_form').serialize(),
+				security: 		'<?php echo wp_create_nonce("get-variation"); ?>'
+			};
+
+			jQuery.post('<?php echo admin_url('admin-ajax.php'); ?>', data, function(response) {
+				
+				if (response.length > 1) {
+				
+					variation_response = jQuery.parseJSON( response );
+
+					jQuery('.single_variation').html( variation_response.price_html + variation_response.availability_html );
+					
+					//variation_response.image_src;
+					
+					jQuery('.variations_button, .single_variation').slideDown();
+				} else {
+					jQuery('.single_variation').slideDown();
+					jQuery('.single_variation').html( '<p><?php _e('This variation is not available.', 'jigoshop') ?></p>' );
+				}
+								
+				jQuery('.variations').unblock();
+			});
+		
 		} else {
 			jQuery('.variations_button').hide();
 		}

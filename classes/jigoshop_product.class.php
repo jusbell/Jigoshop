@@ -156,11 +156,12 @@ class jigoshop_product {
 	
 	/** Get the add to url */
 	function add_to_cart_url() {
-		if ( $this->has_child() ) :
-			$url = add_query_arg('add-to-cart', 'group');
-			$url = add_query_arg('product', $this->id, $url);
-		elseif ($this->is_type('variable')) :
+		
+		if ($this->is_type('variable')) :
 			$url = add_query_arg('add-to-cart', 'variation');
+			$url = add_query_arg('product', $this->id, $url);
+		elseif ( $this->has_child() ) :
+			$url = add_query_arg('add-to-cart', 'group');
 			$url = add_query_arg('product', $this->id, $url);
 		else :
 			$url = add_query_arg('add-to-cart', $this->id);
@@ -534,4 +535,5 @@ class jigoshop_product {
 
 		endif;
 	}
+
 }

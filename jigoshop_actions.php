@@ -4,6 +4,7 @@
  *
  * Various hooks Jigoshop uses to do stuff. index:
  *
+ *		- Get variation
  *		- When default permalinks are enabled, redirect shop page to post type archive url
  *		- Add to Cart
  *		- Clear cart
@@ -14,6 +15,58 @@
  *
  **/
 
+
+/**
+ * Get variation
+ *
+ * Get variation price etc when using frontend form
+ *
+ * @since 		1.0
+ */
+add_action('wp_ajax_jigoshop_get_variation', 'display_variation_data');
+add_action('wp_ajax_nopriv_jigoshop_get_variation', 'display_variation_data');
+
+function display_variation_data() {
+	
+	check_ajax_referer( 'get-variation', 'security' );
+	
+	// get variation terms
+	$variation_query 	= array();
+	$variation_data 	= array();
+	parse_str( $_POST['variation_data'], $variation_data );
+	
+	$variation_id = jigoshop_find_variation( $variation_data );
+	
+	if (!$variation_id) die();
+	
+	$_product = &new jigoshop_product_variation($variation_id);
+	
+	$availability = $_product->get_availability();
+	
+	if ($availability['availability']) :
+		$availability_html = '<p class="stock '.$availability['class'].'">'. $availability['availability'].'</p>';
+	else :
+		$availability_html = '';
+	endif;
+	
+	if (has_post_thumbnail($variation_id)) :
+		$attachment_id = get_post_thumbnail_id( $variation_id );
+		$image = current(wp_get_attachment_image_src( $attachment_id, 'thumbnail'));
+	else :
+		$image = '';
+	endif;
+	
+	$data = array(
+		'price_html' 		=> '<span class="price">'.$_product->get_price_html().'</span>',
+		'availability_html' => $availability_html,
+		'image_src'			=> $image
+	);
+	
+	echo json_encode( $data );
+
+	// Quit out
+	die();
+}
 
 /**
  * When default permalinks are enabled, redirect shop page to post type archive url
@@ -99,13 +152,14 @@ function jigoshop_add_to_cart_action( $url = false ) {
 				$attributes = (array) maybe_unserialize( get_post_meta($product_id, 'product_attributes', true) );
 				$variations = array();
 				$all_variations_set = true;
+				$variation_id = 0;
 				
 				foreach ($attributes as $attribute) :
 								
 					if ( $attribute['variation']!=='yes' ) continue;
 					
-					if (isset($_POST[ 'option_' . sanitize_title($attribute['name']) ]) && $_POST[ 'option_' . sanitize_title($attribute['name']) ]) :
-						$variations[sanitize_title($attribute['name'])] = $_POST[ 'option_' . sanitize_title($attribute['name']) ];
+					if (isset($_POST[ 'tax_' . sanitize_title($attribute['name']) ]) && $_POST[ 'tax_' . sanitize_title($attribute['name']) ]) :
+						$variations['tax_' .sanitize_title($attribute['name'])] = $_POST[ 'tax_' . sanitize_title($attribute['name']) ];
 					else :
 						$all_variations_set = false;
 					endif;
@@ -115,8 +169,16 @@ function jigoshop_add_to_cart_action( $url = false ) {
 				if (!$all_variations_set) :
 					jigoshop::add_error( __('Please choose product options&hellip;', 'jigoshop') );
 				else :
-					jigoshop_cart::add_to_cart($product_id, $quantity, $variations);
-					jigoshop::add_message( sprintf(__('<a href="%s" class="button">View Cart &rarr;</a> Product successfully added to your basket.', 'jigoshop'), jigoshop_cart::get_cart_url()) );
+					// Find matching variation
+					$variation_id = jigoshop_find_variation( $variations );
+					
+					if ($variation_id>0) :
+						// Add to cart
+						jigoshop_cart::add_to_cart($product_id, $quantity, $variations, $variation_id);
+						jigoshop::add_message( sprintf(__('<a href="%s" class="button">View Cart &rarr;</a> Product successfully added to your basket.', 'jigoshop'), jigoshop_cart::get_cart_url()) );
+					else :
+						jigoshop::add_error( __('Sorry, this variation is not available.', 'jigoshop') );
+					endif;
 				endif;
 			
 			elseif ($_GET['product']) :

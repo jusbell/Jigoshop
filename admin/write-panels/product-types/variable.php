@@ -383,11 +383,9 @@ function process_product_meta_variable( $data, $post_id ) {
 							
 				if ( $attribute['variation']=='yes' ) :
 				
-					$value = $_POST[ 'tax_' . sanitize_title($attribute['name']) ][$i];
+					$value = trim($_POST[ 'tax_' . sanitize_title($attribute['name']) ][$i]);
 					
-					if ($value) :
-						update_post_meta( $variation_id, 'tax_' . sanitize_title($attribute['name']), $value );
-					endif;
+					update_post_meta( $variation_id, 'tax_' . sanitize_title($attribute['name']), $value );
 				
 				endif;
 

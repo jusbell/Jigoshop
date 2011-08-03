@@ -51,7 +51,8 @@ function display_variation_data() {
 	
 	if (has_post_thumbnail($variation_id)) :
 		$attachment_id = get_post_thumbnail_id( $variation_id );
-		$image = current(wp_get_attachment_image_src( $attachment_id, 'thumbnail'));
+		$large_thumbnail_size = apply_filters('single_product_large_thumbnail_size', 'shop_large');
+		$image = current(wp_get_attachment_image_src( $attachment_id, $large_thumbnail_size));
 	else :
 		$image = '';
 	endif;

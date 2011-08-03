@@ -174,10 +174,27 @@ jQuery(function(){
 
 					jQuery('.single_variation').html( variation_response.price_html + variation_response.availability_html );
 					
-					//variation_response.image_src;
+					var img = jQuery('div.images img:eq(0)');
+					var o_src = jQuery(img).attr('original-src');
+					var variation_image = variation_response.image_src;
 					
+					if (!o_src) {
+						jQuery(img).attr('original-src', jQuery(img).attr('src'));
+					}
+					
+					if (variation_image.length > 1) {	
+						jQuery(img).attr('src', variation_image);
+					} else {
+						jQuery(img).attr('src', o_src);
+					}
+
 					jQuery('.variations_button, .single_variation').slideDown();
 				} else {
+					var img = jQuery('div.images img:eq(0)');
+					var o_src = jQuery(img).attr('original-src');
+					if (o_src) {
+						jQuery(img).attr('src', o_src);
+					}
 					jQuery('.single_variation').slideDown();
 					jQuery('.single_variation').html( '<p>' + params.variation_not_available_text + '</p>' );
 				}

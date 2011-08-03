@@ -137,6 +137,7 @@ We have a <a href="http://jigoshop.com/forum" title="Jigoshop support forum">com
 == Changelog ==
 
 = 0.9.9 = 
+* PRODUCT VARIATIONS
 * Grouped products can contain downloadable, simple, or virtual products
 * Changed mail from/to for store
 * Download limiter fix

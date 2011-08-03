@@ -53,14 +53,17 @@ function display_variation_data() {
 		$attachment_id = get_post_thumbnail_id( $variation_id );
 		$large_thumbnail_size = apply_filters('single_product_large_thumbnail_size', 'shop_large');
 		$image = current(wp_get_attachment_image_src( $attachment_id, $large_thumbnail_size));
+		$image_link = current(wp_get_attachment_image_src( $attachment_id, 'full'));
 	else :
 		$image = '';
+		$image_link = '';
 	endif;
 	
 	$data = array(
 		'price_html' 		=> '<span class="price">'.$_product->get_price_html().'</span>',
 		'availability_html' => $availability_html,
-		'image_src'			=> $image
+		'image_src'			=> $image,
+		'image_link'		=> $image_link
 	);
 	
 	echo json_encode( $data );

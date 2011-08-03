@@ -231,7 +231,7 @@ class jigoshop_cart {
 		
 		foreach (self::$cart_contents as $cart_item_key => $values) :
 			$_product = $values['data'];
-			if ($_product->is_type( 'simple' )) :
+			if ( $_product->is_type( 'simple' ) || $_product->is_type( 'variable' ) ) :
 				$needs_shipping = true;
 			endif;
 		endforeach;
@@ -248,27 +248,6 @@ class jigoshop_cart {
 		
 		return false;
 	}
-	
-	
-	/** Show variation info if set */
-	function get_formatted_variation( $values ) {
-		if (isset($values['variation']) && is_array($values['variation'])) :
-			
-			$return = '<dl class="variation">';
-			
-			foreach ($values['variation'] as $name => $value) :
-				
-				$return .= '<dt>'.ucfirst(str_replace('tax_', '', $name)).':</dt><dd>'.ucfirst($value).'</dd>';
-				
-			endforeach;
-			
-			$return .= '</dl>';
-			
-			return $return;
-			
-		endif;
-	}
-	
 	
 	/** looks at the totals to see if payment is actually required */
 	function needs_payment() {

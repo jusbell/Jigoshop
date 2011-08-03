@@ -436,7 +436,13 @@ function jigoshop_view_order() {
 						foreach($order->items as $item) : 
 							echo '
 								<tr>
-									<td>'.$item['name'].'</td>
+									<td class="product-name">'.$item['name'];
+							
+							if (isset($item['meta']['variation']) && $item['meta']['variation']) :
+								echo jigoshop_get_formatted_variation( $item['meta']['variation'] );
+							endif;
+							
+							echo '	</td>
 									<td>'.$item['qty'].'</td>
 									<td>'.jigoshop_price( $item['cost']*$item['qty'], array('ex_tax_label' => 1) ).'</td>
 								</tr>';

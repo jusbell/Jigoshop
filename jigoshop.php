@@ -3,7 +3,7 @@
 Plugin Name: Jigoshop - WordPress eCommerce
 Plugin URI: http://jigoshop.com
 Description: An eCommerce plugin for wordpress.
-Version: 0.9.8.1
+Version: 0.9.9
 Author: Jigowatt
 Author URI: http://jigowatt.co.uk
 Requires at least: 3.1
@@ -451,6 +451,25 @@ function jigoshop_price( $price, $args = array() ) {
 	if ($ex_tax_label && get_option('jigoshop_calc_taxes')=='yes') $return .= __(' <small>(ex. tax)</small>', 'jigoshop');
 	
 	return $return;
+}
+
+/** Show variation info if set */
+function jigoshop_get_formatted_variation( $variation = '' ) {
+	if ($variation && is_array($variation)) :
+		
+		$return = '<dl class="variation">';
+		
+		foreach ($variation as $name => $value) :
+			
+			$return .= '<dt>'.ucfirst(str_replace('tax_', '', $name)).':</dt><dd>'.ucfirst($value).'</dd>';
+			
+		endforeach;
+		
+		$return .= '</dl>';
+		
+		return $return;
+		
+	endif;
 }
 
 function jigoshop_let_to_num($v) {

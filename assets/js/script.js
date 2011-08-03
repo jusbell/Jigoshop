@@ -168,32 +168,41 @@ jQuery(function(){
 
 			jQuery.post( params.ajax_url, data, function(response) {
 				
+				var img = jQuery('div.images img:eq(0)');
+				var link = jQuery('div.images a.zoom');
+				var o_src = jQuery(img).attr('original-src');
+				var o_link = jQuery(link).attr('original-href');
+
 				if (response.length > 1) {
 				
 					variation_response = jQuery.parseJSON( response );
+					
+					var variation_image = variation_response.image_src;
+					var variation_link = variation_response.image_link;
 
 					jQuery('.single_variation').html( variation_response.price_html + variation_response.availability_html );
-					
-					var img = jQuery('div.images img:eq(0)');
-					var o_src = jQuery(img).attr('original-src');
-					var variation_image = variation_response.image_src;
 					
 					if (!o_src) {
 						jQuery(img).attr('original-src', jQuery(img).attr('src'));
 					}
 					
+					if (!o_link) {
+						jQuery(link).attr('original-href', jQuery(link).attr('href'));
+					}
+					
 					if (variation_image.length > 1) {	
 						jQuery(img).attr('src', variation_image);
+						jQuery(link).attr('href', variation_link);
 					} else {
 						jQuery(img).attr('src', o_src);
+						jQuery(link).attr('href', o_link);
 					}
 
 					jQuery('.variations_button, .single_variation').slideDown();
 				} else {
-					var img = jQuery('div.images img:eq(0)');
-					var o_src = jQuery(img).attr('original-src');
 					if (o_src) {
 						jQuery(img).attr('src', o_src);
+						jQuery(link).attr('href', o_link);
 					}
 					jQuery('.single_variation').slideDown();
 					jQuery('.single_variation').html( '<p>' + params.variation_not_available_text + '</p>' );

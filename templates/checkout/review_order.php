@@ -108,7 +108,7 @@
 					if ($_product->exists() && $values['quantity']>0) :
 						echo '
 							<tr>
-								<td>'.$_product->get_title().'</td>
+								<td class="product-name">'.$_product->get_title().jigoshop_get_formatted_variation( $values['variation'] ).'</td>
 								<td>'.$values['quantity'].'</td>
 								<td>'.jigoshop_price($_product->get_price_excluding_tax()*$values['quantity'], array('ex_tax_label' => 1)).'</td>
 							</tr>';

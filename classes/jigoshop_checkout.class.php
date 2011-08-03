@@ -535,13 +535,17 @@ class jigoshop_checkout {
 							$rate = $_tax->get_rate( $_product->data['tax_class'] );
 						endif;
 						
-						$order_items[] = array(
-					 		'id' 		=> $values['product_id'],
-					 		'name' 		=> $_product->get_title(),
-					 		'qty' 		=> (int) $values['quantity'],
-					 		'cost' 		=> $_product->get_price_excluding_tax(),
-					 		'taxrate' 	=> $rate
-					 	);
+						$order_items[] = apply_filters('new_order_item', array(
+					 		'id' 			=> $values['product_id'],
+					 		'name' 			=> $_product->get_title(),
+					 		'qty' 			=> (int) $values['quantity'],
+					 		'cost' 			=> $_product->get_price_excluding_tax(),
+					 		'taxrate' 		=> $rate,
+					 		'meta'			=> array(
+					 			'variation_id' 	=> $values['variation_id'],
+					 			'variation' 	=> $values['variation']
+					 			)
+					 	));
 					 	
 					 	// Check stock levels
 					 	if ($_product->managing_stock()) :

@@ -12,7 +12,7 @@ Tested up to: 3.1.3
 
 @session_start();
 
-if (!defined("JIGOSHOP_VERSION")) define("JIGOSHOP_VERSION", "0.9.8.1");	
+if (!defined("JIGOSHOP_VERSION")) define("JIGOSHOP_VERSION", "0.9.9");	
 if (!defined("PHP_EOL")) define("PHP_EOL", "\r\n");
 
 load_plugin_textdomain('jigoshop', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/');

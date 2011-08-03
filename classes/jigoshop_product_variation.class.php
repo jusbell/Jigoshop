@@ -12,6 +12,7 @@
 class jigoshop_product_variation extends jigoshop_product {
 	
 	var $variation;
+	var $variation_data;
 	var $variation_id;
 	var $variation_has_weight;
 	var $variation_has_price;
@@ -27,8 +28,18 @@ class jigoshop_product_variation extends jigoshop_product {
 	function jigoshop_product_variation( $variation_id ) {
 		
 		$this->variation_id = $variation_id;
-
+	
 		$product_custom_fields = get_post_custom( $this->variation_id );
+		
+		$this->variation_data = array();
+		
+		foreach ($product_custom_fields as $name => $value) :
+			
+			if (!strstr($name, 'tax_')) continue;
+			
+			$this->variation_data[$name] = $value[0];
+			
+		endforeach;
 
 		$this->get_variation_post_data();
 		

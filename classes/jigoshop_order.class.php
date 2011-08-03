@@ -180,6 +180,10 @@ class jigoshop_order {
 			
 			$return .= ' - ' . strip_tags(jigoshop_price( $item['cost']*$item['qty'], array('ex_tax_label' => 1 )));
 			
+			if (isset($_product->variation_data)) :
+				$return .= PHP_EOL . jigoshop_get_formatted_variation( $_product->variation_data );
+			endif;
+			
 			if ($show_download_links) :
 				
 				if ($_product->exists) :

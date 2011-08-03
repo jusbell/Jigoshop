@@ -433,13 +433,21 @@ function jigoshop_view_order() {
 				<tbody>
 					<?php
 					if (sizeof($order->items)>0) : 
+					
 						foreach($order->items as $item) : 
+						
+							if (isset($item['variation_id']) && $item['variation_id'] > 0) :
+								$_product = &new jigoshop_product_variation( $item['variation_id'] );
+							else :
+								$_product = &new jigoshop_product( $item['id'] );
+							endif;
+						
 							echo '
 								<tr>
 									<td class="product-name">'.$item['name'];
 							
-							if (isset($item['meta']['variation']) && $item['meta']['variation']) :
-								echo jigoshop_get_formatted_variation( $item['meta']['variation'] );
+							if (isset($_product->variation_data)) :
+								echo jigoshop_get_formatted_variation( $_product->variation_data );
 							endif;
 							
 							echo '	</td>

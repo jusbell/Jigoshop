@@ -245,54 +245,74 @@ function jigoshop_init() {
     if (JIGOSHOP_USE_CSS) wp_register_style('jigoshop_frontend_styles', $css );
 
     if (is_admin()) :
-
     	wp_register_style('jigoshop_admin_styles', jigoshop::plugin_url() . '/assets/css/admin.css');
    		wp_register_style('jigoshop_admin_datepicker_styles', jigoshop::plugin_url() . '/assets/css/datepicker.css');
     	wp_enqueue_style('jigoshop_admin_styles');
     	wp_enqueue_style('jigoshop_admin_datepicker_styles');
-    	
-    	wp_register_script( 'jigoshop_backend', jigoshop::plugin_url() . '/assets/js/jigoshop_backend.js', 'jquery', '1.0' );
-    	wp_enqueue_script('jigoshop_backend');
-
     else :
-    	 
     	wp_register_style( 'jigoshop_fancybox_styles', jigoshop::plugin_url() . '/assets/css/fancybox.css' ); 
     	wp_register_style( 'jqueryui_styles', jigoshop::plugin_url() . '/assets/css/ui.css' );
     	
     	wp_enqueue_style('jigoshop_frontend_styles');
     	wp_enqueue_style('jigoshop_fancybox_styles');
     	wp_enqueue_style('jqueryui_styles');
-    	
-    	wp_register_script( 'jigoshop_frontend', jigoshop::plugin_url() . '/assets/js/jigoshop_frontend.js', 'jquery', '1.0' );
-    	wp_register_script( 'jigoshop_script', jigoshop::plugin_url() . '/assets/js/script.js.php', 'jquery', '1.0' );
-    	wp_register_script( 'fancybox', jigoshop::plugin_url() . '/assets/js/jquery.fancybox-1.3.4.pack.js', 'jquery', '1.0' );
-    	wp_register_script( 'jqueryui', 'https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js', 'jquery', '1.0' );
-    	
-    	wp_enqueue_script('jquery');
-    	wp_enqueue_script('jqueryui');
-    	wp_enqueue_script('jigoshop_frontend');
-    	wp_enqueue_script('fancybox');
-    	wp_enqueue_script('jigoshop_script');
-    	
     endif;
 }
 
-add_filter('script_loader_src', 'jigoshop_script_query_string');
-
-function jigoshop_script_query_string($src)
-{
-    if ( FALSE === strpos($src, 'script.js.php') ) return $src;
-
-    $src = explode('?', $src);
-    
-    $load_scripts = array();
-    
-    if ( is_page(get_option('jigoshop_checkout_page_id')) || is_page(get_option('jigoshop_pay_page_id')) ) :
-    	$load_scripts[] = 'checkout';
-    endif;
-
-    return $src[0] . '?load_scripts='.implode(',', $load_scripts);
+function jigoshop_admin_scripts() {
+	
+	wp_register_script( 'jigoshop_backend', jigoshop::plugin_url() . '/assets/js/jigoshop_backend.js', 'jquery', '1.0' );
+    wp_enqueue_script('jigoshop_backend');
+    	
 }
+add_action('admin_print_scripts', 'jigoshop_admin_scripts');
+
+function jigoshop_frontend_scripts() {
+	
+	wp_register_script( 'jigoshop_frontend', jigoshop::plugin_url() . '/assets/js/jigoshop_frontend.js', 'jquery', '1.0' );
+	wp_register_script( 'jigoshop_script', jigoshop::plugin_url() . '/assets/js/script.js', 'jquery', '1.0' );
+	wp_register_script( 'fancybox', jigoshop::plugin_url() . '/assets/js/jquery.fancybox-1.3.4.pack.js', 'jquery', '1.0' );
+	wp_register_script( 'jqueryui', 'https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js', 'jquery', '1.0' );
+	
+	wp_enqueue_script('jquery');
+	wp_enqueue_script('jqueryui');
+	wp_enqueue_script('jigoshop_frontend');
+	wp_enqueue_script('fancybox');
+	wp_enqueue_script('jigoshop_script');
+    	
+	/* Script.js variables */
+	$params = array(
+		'currency_symbol' 				=> get_jigoshop_currency_symbol(),
+		'countries' 					=> json_encode(jigoshop_countries::$states),
+		'select_state_text' 			=> __('Select a state&hellip;', 'jigoshop'),
+		'state_text' 					=> __('state', 'jigoshop'),
+		'variation_not_available_text' 	=> __('This variation is not available.', 'jigoshop'),
+		'plugin_url' 					=> jigoshop::plugin_url(),
+		'ajax_url' 						=> admin_url('admin-ajax.php'),
+		'get_variation_nonce' 			=> wp_create_nonce("get-variation"),
+		'review_order_url'				=> jigoshop_get_template_file_url('checkout/review_order.php', true),
+		'option_guest_checkout'			=> get_option('jigoshop_enable_guest_checkout'),
+		'checkout_url'					=> admin_url('admin-ajax.php?action=jigoshop-checkout')
+	);
+	
+	if (isset($_SESSION['min_price'])) :
+		$params['min_price'] = $_SESSION['min_price'];
+	endif;
+	if (isset($_SESSION['max_price'])) :
+		$params['max_price'] = $_SESSION['max_price'];
+	endif;
+		
+	if ( is_page(get_option('jigoshop_checkout_page_id')) || is_page(get_option('jigoshop_pay_page_id')) ) :
+		$params['is_checkout'] = 1;
+	else :
+		$params['is_checkout'] = 0;
+	endif;
+	
+	wp_localize_script( 'jigoshop_script', 'params', $params );
+	
+}
+add_action('template_redirect', 'jigoshop_frontend_scripts');
+
 
 /* 
 	jigoshop_demo_store

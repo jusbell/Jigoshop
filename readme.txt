@@ -145,6 +145,7 @@ We have a <a href="http://jigoshop.com/forum" title="Jigoshop support forum">com
 * Fixed 'needs shipping' for downloadable products
 * Made my account downloads respect order status
 * Filter for ship to billing defaults
+* Optimised scripts.js (no longer a php file)
 
 = 0.9.8.1 =
 * Changes to allow new product types to be added by plugins

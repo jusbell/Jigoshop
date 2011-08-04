@@ -43,10 +43,32 @@ class jigoshop_product_variation extends jigoshop_product {
 
 		$this->get_variation_post_data();
 		
-		parent::jigoshop_product( $this->variation->post_parent );
-
-		$this->parent = &new jigoshop_product( $this->variation->post_parent );
+		/* Get main product data from parent */
+		$this->id = $this->variation->post_parent;
 		
+		$parent_custom_fields = get_post_custom( $this->id );
+
+		if (isset($parent_custom_fields['SKU'][0]) && !empty($parent_custom_fields['SKU'][0])) $this->sku = $parent_custom_fields['SKU'][0]; else $this->sku = $this->id;
+		if (isset($parent_custom_fields['product_data'][0])) $this->data = maybe_unserialize( $parent_custom_fields['product_data'][0] ); else $this->data = '';
+		if (isset($parent_custom_fields['product_attributes'][0])) $this->attributes = maybe_unserialize( $parent_custom_fields['product_attributes'][0] ); else $this->attributes = array();		
+		if (isset($parent_custom_fields['price'][0])) $this->price = $parent_custom_fields['price'][0]; else $this->price = 0;
+		if (isset($parent_custom_fields['visibility'][0])) $this->visibility = $parent_custom_fields['visibility'][0]; else $this->visibility = 'hidden';
+		if (isset($parent_custom_fields['stock'][0])) $this->stock = $parent_custom_fields['stock'][0]; else $this->stock = 0;
+		
+		// Again just in case, to fix WP bug
+		$this->data = maybe_unserialize( $this->data );
+		$this->attributes = maybe_unserialize( $this->attributes );
+		$this->product_type = 'variable';
+			
+		if ($this->data) :
+			$this->exists = true;		
+		else :
+			$this->exists = false;	
+		endif;
+		
+		//parent::jigoshop_product( $this->variation->post_parent );
+		
+		/* Pverride parent data with variation */
 		if (isset($product_custom_fields['SKU'][0]) && !empty($product_custom_fields['SKU'][0])) :
 			$this->variation_has_sku = true;
 			$this->sku = $product_custom_fields['SKU'][0];
@@ -91,7 +113,7 @@ class jigoshop_product_variation extends jigoshop_product {
 				return $this->price;
 			endif;
 		else :
-			return $this->parent->get_price();
+			return parent::get_price();
 		endif;
 		
 	}
@@ -111,7 +133,7 @@ class jigoshop_product_variation extends jigoshop_product {
 	
 			return $price;
 		else :
-			return jigoshop_price($this->parent->get_price());
+			return jigoshop_price(parent::get_price());
 		endif;
 	}
 	
@@ -128,7 +150,7 @@ class jigoshop_product_variation extends jigoshop_product {
 				return $reduce_to;
 			endif;
 		else :
-			$this->parent->reduce_stock( $by );
+			parent::reduce_stock( $by );
 		endif;
 	}
 	
@@ -145,7 +167,7 @@ class jigoshop_product_variation extends jigoshop_product {
 				return $increase_to;
 			endif;
 		else :
-			$this->parent->increase_stock( $by );
+			parent::increase_stock( $by );
 		endif;
 	}
 

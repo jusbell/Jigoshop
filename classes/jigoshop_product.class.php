@@ -32,10 +32,10 @@ class jigoshop_product {
 	 */
 	function jigoshop_product( $id ) {
 		
-		$product_custom_fields = get_post_custom( $id );
-		
 		$this->id = $id;
-		
+
+		$product_custom_fields = get_post_custom( $this->id );
+
 		if (isset($product_custom_fields['SKU'][0]) && !empty($product_custom_fields['SKU'][0])) $this->sku = $product_custom_fields['SKU'][0]; else $this->sku = $this->id;
 		
 		if (isset($product_custom_fields['product_data'][0])) $this->data = maybe_unserialize( $product_custom_fields['product_data'][0] ); else $this->data = '';
@@ -60,16 +60,7 @@ class jigoshop_product {
 			$this->product_type = 'simple';
 		endif;
 		
-		$this->children = array();
-		
-		if ($this->is_type('variable')) $child_post_type = 'product_variation'; else $child_post_type = 'product';
-		
-		if ( $children_products =& get_children( 'post_parent='.$id.'&post_type='.$child_post_type.'&orderby=menu_order&order=ASC' ) ) :
-			if ($children_products) foreach ($children_products as $child) :
-				$child->product = &new jigoshop_product( $child->ID );
-			endforeach;
-			$this->children = (array) $children_products;
-		endif;
+		$this->get_children();
 		
 		if ($this->data) :
 			$this->exists = true;		
@@ -78,6 +69,34 @@ class jigoshop_product {
 		endif;
 	}
 	
+	/** Returns the product's children */
+	function get_children() {
+		
+		if (!is_array($this->children)) :
+		
+			$this->children = array();
+			
+			if ($this->is_type('variable')) $child_post_type = 'product_variation'; else $child_post_type = 'product';
+		
+			if ( $children_products =& get_children( 'post_parent='.$this->id.'&post_type='.$child_post_type.'&orderby=menu_order&order=ASC' ) ) :
+
+				if ($children_products) foreach ($children_products as $child) :
+					
+					if ($this->is_type('variable')) :
+						$child->product = &new jigoshop_product_variation( $child->ID );
+					else :
+						$child->product = &new jigoshop_product( $child->ID );
+					endif;
+					
+				endforeach;
+				$this->children = (array) $children_products;
+			endif;
+			
+		endif;
+		
+		return $this->children;
+	}
+
 	/**
 	 * Reduce stock level of the product
 	 *

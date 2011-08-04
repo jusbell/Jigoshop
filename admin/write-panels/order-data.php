@@ -257,8 +257,9 @@ function jigoshop_order_items_meta_box($post) {
 		<table cellpadding="0" cellspacing="0" class="jigoshop_order_items">
 			<thead>
 				<tr>
-					<th class="product-id"><?php _e('Product ID', 'jigoshop'); ?></th>
+					<th class="product-id"><?php _e('Product ID/SKU', 'jigoshop'); ?></th>
 					<th class="name"><?php _e('Name', 'jigoshop'); ?></th>
+					<th class="variation"><?php _e('Variation', 'jigoshop'); ?></th>
 					<th class="quantity"><?php _e('Quantity', 'jigoshop'); ?></th>
 					<th class="cost"><?php _e('Cost', 'jigoshop'); ?></th>
 					<th class="tax"><?php _e('Tax Rate', 'jigoshop'); ?></th>
@@ -267,10 +268,36 @@ function jigoshop_order_items_meta_box($post) {
 			</thead>
 			<tbody id="order_items_list">	
 				
-				<?php if (sizeof($order_items)>0 && isset($order_items[0]['id'])) foreach ($order_items as $item) : ?>
+				<?php if (sizeof($order_items)>0 && isset($order_items[0]['id'])) foreach ($order_items as $item) : 
+					
+					if (isset($item['variation_id']) && $item['variation_id'] > 0) :
+						$_product = &new jigoshop_product_variation( $item['variation_id'] );
+					else :
+						$_product = &new jigoshop_product( $item['id'] );
+					endif;
+					?>
 					<tr>
-						<td class="product-id"><input type="text" name="item_id[]" placeholder="<?php _e('ID', 'jigoshop'); ?>" value="<?php echo $item['id']; ?>" /></td>
-						<td class="name"><input type="text" name="item_name[]" placeholder="<?php _e('Item Name', 'jigoshop'); ?>" value="<?php echo $item['name']; ?>" /></td>
+						<td class="product-id">#<?php echo $item['id']; ?> <?php if ($_product->sku) echo '(SKU: '.$_product->sku.')'; ?></td>
+						<td class="name"><?php echo $item['name']; ?></td>
+						<td class="variation"><select>
+							<option><?php _e('N/A', 'jigoshop'); ?></option>
+							<?php
+								if ( $_product->is_type('variable') ) :
+									$children = $_product->get_children();
+									if ($children) :
+										foreach ($children as $variation) :
+											
+											echo '<option value="'.$variation->ID.'"';
+											
+											selected($variation->ID, $item['variation_id']);
+											
+											echo '>'.$variation->post_title.'</option>';
+											
+										endforeach;
+									endif;
+								endif;
+							?>
+						</select></td>
 						<td class="quantity"><input type="text" name="item_quantity[]" placeholder="<?php _e('Quantity e.g. 2', 'jigoshop'); ?>" value="<?php echo $item['qty']; ?>" /></td>
 						<td class="cost"><input type="text" name="item_cost[]" placeholder="<?php _e('Cost per unit ex. tax e.g. 2.99', 'jigoshop'); ?>" value="<?php echo $item['cost']; ?>" /></td>
 						<td class="tax"><input type="text" name="item_tax_rate[]" placeholder="<?php _e('Tax Rate e.g. 20.0000', 'jigoshop'); ?>" value="<?php echo $item['taxrate']; ?>" /></td>

@@ -350,11 +350,24 @@ function process_product_meta_variable( $data, $post_id ) {
 			// Enabled or disabled
 			if (isset($variable_enabled[$i])) $post_status = 'publish'; else $post_status = 'private';
 			
+			// Generate a useful post title
+			$title = array();
+			
+			foreach ($attributes as $attribute) :
+				if ( $attribute['variation']=='yes' ) :
+					$value = trim($_POST[ 'tax_' . sanitize_title($attribute['name']) ][$i]);
+					if ($value) $title[] = ucfirst($attribute['name']).': '.$value;
+				endif;
+			endforeach;
+			
+			$sku_string = '#'.$variation_id;
+			if ($variable_sku[$i]) $sku_string .= ' SKU: ' . $variable_sku[$i];
+			
 			// Update or Add post
 			if (!$variation_id) :
 				
 				$variation = array(
-					'post_title' => 'Product #' . $post_id . ' Variation',
+					'post_title' => '#' . $post_id . ' Variation ('.$sku_string.') - ' . implode(', ', $title),
 					'post_content' => '',
 					'post_status' => $post_status,
 					'post_author' => get_current_user_id(),
@@ -366,7 +379,7 @@ function process_product_meta_variable( $data, $post_id ) {
 			else :
 				
 				global $wpdb;
-				$wpdb->update( $wpdb->posts, array( 'post_status' => $post_status ), array( 'ID' => $variation_id ) );
+				$wpdb->update( $wpdb->posts, array( 'post_status' => $post_status, 'post_title' => '#' . $post_id . ' Variation ('.$sku_string.') - ' . implode(', ', $title) ), array( 'ID' => $variation_id ) );
 			
 			endif;
 

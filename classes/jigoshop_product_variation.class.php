@@ -150,7 +150,7 @@ class jigoshop_product_variation extends jigoshop_product {
 				return $reduce_to;
 			endif;
 		else :
-			parent::reduce_stock( $by );
+			return parent::reduce_stock( $by );
 		endif;
 	}
 	
@@ -167,7 +167,7 @@ class jigoshop_product_variation extends jigoshop_product {
 				return $increase_to;
 			endif;
 		else :
-			parent::increase_stock( $by );
+			return parent::increase_stock( $by );
 		endif;
 	}
 

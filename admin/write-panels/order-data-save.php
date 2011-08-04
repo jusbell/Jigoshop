@@ -63,6 +63,7 @@ function jigoshop_process_shop_order_meta( $post_id, $post ) {
 	
 		if (isset($_POST['item_id'])) :
 			 $item_id		= $_POST['item_id'];
+			 $item_variation= $_POST['item_variation'];
 			 $item_name 	= $_POST['item_name'];
 			 $item_quantity = $_POST['item_quantity'];
 			 $item_cost 	= $_POST['item_cost'];
@@ -76,14 +77,15 @@ function jigoshop_process_shop_order_meta( $post_id, $post ) {
 			 	if (!isset($item_cost[$i])) continue;
 			 	if (!isset($item_tax_rate[$i])) continue;
 			 	
-			 	$order_items[] = array(
-			 		'id' 		=> htmlspecialchars(stripslashes($item_id[$i])),
-			 		'name' 		=> htmlspecialchars(stripslashes($item_name[$i])),
-			 		'qty' 		=> (int) $item_quantity[$i],
-			 		'cost' 		=> number_format(jigowatt_clean($item_cost[$i]), 2),
-			 		'taxrate' 	=> number_format(jigowatt_clean($item_tax_rate[$i]), 4)
-			 	);
-
+			 	$order_items[] = apply_filters('update_order_item', array(
+			 		'id' 			=> htmlspecialchars(stripslashes($item_id[$i])),
+			 		'variation_id' 	=> (int) $item_variation[$i],
+			 		'name' 			=> htmlspecialchars(stripslashes($item_name[$i])),
+			 		'qty' 			=> (int) $item_quantity[$i],
+			 		'cost' 			=> number_format(jigowatt_clean($item_cost[$i]), 2),
+			 		'taxrate' 		=> number_format(jigowatt_clean($item_tax_rate[$i]), 4)
+			 	));
+			 	
 			 endfor; 
 		endif;	
 	
@@ -100,7 +102,7 @@ function jigoshop_process_shop_order_meta( $post_id, $post ) {
 			
 			foreach ($order_items as $order_item) :
 						
-				$_product = &new jigoshop_product( $order_item['id'] );
+				$_product = $order->get_product_from_item( $order_item );
 				
 				if ($_product->exists) :
 				
@@ -141,7 +143,7 @@ function jigoshop_process_shop_order_meta( $post_id, $post ) {
 			
 			foreach ($order_items as $order_item) :
 						
-				$_product = &new jigoshop_product( $order_item['id'] );
+				$_product = $order->get_product_from_item( $order_item );
 				
 				if ($_product->exists) :
 				

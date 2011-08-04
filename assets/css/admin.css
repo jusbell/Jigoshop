@@ -63,6 +63,10 @@
 }
 #jigoshop-order-items .buttons {
   float: left;
+  padding-left: 6px;
+}
+#jigoshop-order-items h3 small {
+  color: #999;
 }
 dl.totals {
   float: right;

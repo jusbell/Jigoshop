@@ -454,18 +454,34 @@ function jigoshop_price( $price, $args = array() ) {
 }
 
 /** Show variation info if set */
-function jigoshop_get_formatted_variation( $variation = '' ) {
+function jigoshop_get_formatted_variation( $variation = '', $flat = false ) {
 	if ($variation && is_array($variation)) :
 		
-		$return = '<dl class="variation">';
+		if (!$flat) :
+			$return = '<dl class="variation">';
+		endif;
+		
+		$varation_list = array();
 		
 		foreach ($variation as $name => $value) :
 			
-			$return .= '<dt>'.ucfirst(str_replace('tax_', '', $name)).':</dt><dd>'.ucfirst($value).'</dd>';
+			if ($flat) :
+				$varation_list[] = ucfirst(str_replace('tax_', '', $name)).': '.ucfirst($value);
+			else :
+				$varation_list[] = '<dt>'.ucfirst(str_replace('tax_', '', $name)).':</dt><dd>'.ucfirst($value).'</dd>';
+			endif;
 			
 		endforeach;
 		
-		$return .= '</dl>';
+		if ($flat) :
+			$return .= implode(', ', $varation_list);
+		else :
+			$return .= implode('', $varation_list);
+		endif;
+		
+		if (!$flat) :
+			$return .= '</dl>';
+		endif;
 		
 		return $return;
 		

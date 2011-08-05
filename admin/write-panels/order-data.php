@@ -318,6 +318,7 @@ function jigoshop_order_items_meta_box($post) {
 		</table>
 	</div>
 	<p class="buttons">
+		<input type="text" name="item_id" class="item_id" placeholder="<?php _e('Item ID/SKU', 'jigoshop'); ?>" />
 		<button type="button" class="button button-primary add_shop_order_item"><?php _e('Add item', 'jigoshop'); ?></button>
 		<button type="button" class="button button calc_totals"><?php _e('Calculate totals', 'jigoshop'); ?></button>
 	</p>

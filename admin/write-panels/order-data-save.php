@@ -42,7 +42,6 @@ function jigoshop_process_shop_order_meta( $post_id, $post ) {
 		$data['shipping_postcode'] 		= stripslashes( $_POST['shipping_postcode'] );
 		$data['shipping_country'] 		= stripslashes( $_POST['shipping_country'] );
 		$data['shipping_state'] 		= stripslashes( $_POST['shipping_state'] );
-		
 		$data['shipping_method']		= stripslashes( $_POST['shipping_method'] );
 		$data['payment_method'] 		= stripslashes( $_POST['payment_method'] );
 		$data['order_subtotal'] 		= stripslashes( $_POST['order_subtotal'] );

@@ -64,6 +64,14 @@
 #jigoshop-order-items .buttons {
   float: left;
   padding-left: 6px;
+  vertical-align: top;
+}
+#jigoshop-order-items .buttons .item_id {
+  width: 100px;
+  vertical-align: top;
+}
+#jigoshop-order-items .buttons button {
+  margin: 2px 0 0 0;
 }
 #jigoshop-order-items h3 small {
   color: #999;

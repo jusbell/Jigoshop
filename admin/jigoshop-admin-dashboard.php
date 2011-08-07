@@ -137,10 +137,10 @@ function jigoshop_dashboard() {
 							<?php
 							
 							$lowstockamount = get_option('jigoshop_notify_low_stock_amount');
-							if (!$lowstockamount) $lowstockamount = 1;
+							if (!is_numeric($lowstockamount)) $lowstockamount = 1;
 							
 							$nostockamount = get_option('jigoshop_notify_no_stock_amount');
-							if (!$nostockamount) $nostockamount = 1;
+							if (!is_numeric($nostockamount)) $nostockamount = 1;
 							
 							$outofstock = array();
 							$lowinstock = array();

@@ -160,6 +160,8 @@ function jigoshop_write_panel_scripts() {
 		'quantity' 						=> __('Quantity e.g. 2', 'jigoshop'),
 		'cost_unit' 					=> __('Cost per unit e.g. 2.99', 'jigoshop'),
 		'tax_rate' 						=> __('Tax Rate e.g. 20.0000', 'jigoshop'),
+		'meta_name'						=> __('Meta Name', 'jigoshop'),
+		'meta_value'					=> __('Meta Value', 'jigoshop'),
 		'plugin_url' 					=> jigoshop::plugin_url(),
 		'ajax_url' 						=> admin_url('admin-ajax.php'),
 		'add_order_item_nonce' 			=> wp_create_nonce("add-order-item")

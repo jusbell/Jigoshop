@@ -145,7 +145,10 @@ dl.totals dd input.last {
 .jigoshop_order_items_wrapper table.jigoshop_order_items .name {
   min-width: 100px;
 }
-.jigoshop_order_items_wrapper table.jigoshop_order_items .center {
+.jigoshop_order_items_wrapper table.jigoshop_order_items .center,
+.jigoshop_order_items_wrapper table.jigoshop_order_items .variation-id,
+.jigoshop_order_items_wrapper table.jigoshop_order_items .product-id,
+.jigoshop_order_items_wrapper table.jigoshop_order_items .product-sku {
   text-align: center;
 }
 .jigoshop_order_items_wrapper table.jigoshop_order_items table.meta tr td {

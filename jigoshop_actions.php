@@ -97,7 +97,7 @@ function jigoshop_add_order_item() {
 		$post = get_post( $item_to_add );
 	endif;
 	
-	if (!$post || $post->post_type!=='product') :
+	if (!$post || ($post->post_type!=='product' && $post->post_type!=='product_variation')) :
 		$post_id = $wpdb->get_var($wpdb->prepare("
 			SELECT post_id
 			FROM $wpdb->posts
@@ -111,11 +111,15 @@ function jigoshop_add_order_item() {
 		$post = get_post( $post_id );
 	endif;
 	
-	if (!$post || $post->post_type!=='product') :
+	if (!$post || ($post->post_type!=='product' && $post->post_type!=='product_variation')) :
 		die();
 	endif;
 	
-	$_product = &new jigoshop_product( $post->ID );
+	if ($post->post_type=="product") :
+		$_product = &new jigoshop_product( $post->ID );
+	else :
+		$_product = &new jigoshop_product_variation( $post->ID );
+	endif;
 	
 	$loop = 0;
 	?>

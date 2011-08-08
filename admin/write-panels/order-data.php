@@ -248,6 +248,7 @@ function jigoshop_order_items_meta_box($post) {
 			<thead>
 				<tr>
 					<th class="product-id"><?php _e('ID', 'jigoshop'); ?></th>
+					<th class="variation-id"><?php _e('Variation ID', 'jigoshop'); ?></th>
 					<th class="product-sku"><?php _e('SKU', 'jigoshop'); ?></th>
 					<th class="name"><?php _e('Name', 'jigoshop'); ?></th>
 					<th class="variation"><?php _e('Variation', 'jigoshop'); ?></th>
@@ -271,7 +272,8 @@ function jigoshop_order_items_meta_box($post) {
 
 					?>
 					<tr>
-						<td class="product-id">#<?php echo $item['id']; ?></td>
+						<td class="product-id"><?php echo $item['id']; ?></td>
+						<td class="variation-id"><?php if ($item['variation_id']) echo $item['variation_id']; else echo '-'; ?></td>
 						<td class="product-sku"><?php if ($_product->sku) echo $_product->sku; ?></td>
 						<td class="name"><a href="<?php echo admin_url('post.php?post='. $_product->id .'&action=edit'); ?>"><?php echo $item['name']; ?></a></td>
 						<td class="variation"><select name="item_variation[<?php echo $loop; ?>]">
@@ -300,16 +302,7 @@ function jigoshop_order_items_meta_box($post) {
 										<td colspan="3"><button class="add_meta button"><?php _e('Add meta', 'jigoshop'); ?></button></td>
 									</tr>
 								</tfoot>
-								<tbody>
-									<tr>
-										<td><input type="text" name="meta_name[<?php echo $loop; ?>][]" placeholder="<?php _e('Meta Name', 'jigoshop'); ?>" /></td>
-										<td><input type="text" name="meta_value[<?php echo $loop; ?>][]" placeholder="<?php _e('Meta Value', 'jigoshop'); ?>" /></td>
-									</tr>
-									<tr>
-										<td><input type="text" name="meta_name[<?php echo $loop; ?>][]" placeholder="<?php _e('Meta Name', 'jigoshop'); ?>" /></td>
-										<td><input type="text" name="meta_value[<?php echo $loop; ?>][]" placeholder="<?php _e('Meta Value', 'jigoshop'); ?>" /></td>
-									</tr>
-								</tbody>
+								<tbody></tbody>
 							</table>
 						</td>
 						<?php do_action('jigoshop_admin_order_item_values', $_product, $item); ?>

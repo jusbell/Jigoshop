@@ -375,35 +375,37 @@ class jigoshop_product {
 			
 		if (get_option('jigoshop_prices_include_tax')=='yes') :
 		
-			if ( $this->is_taxable() && get_option('jigoshop_calc_taxes')=='yes') :
-				
-				$_tax = &new jigoshop_tax();
-				
-				// Get rate for base country
-				$rate = $_tax->get_shop_base_rate( $this->data['tax_class'] );
-				
-				//echo '-> Product Rate: ' . $rate . '<br/>';
+			if ( $rate = $this->get_tax_base_rate() ) :
 				
 				if ( $rate>0 ) :
-	
-					$tax_amount = $_tax->calc_tax( $price, $rate, true );
 					
-					//echo '-> Product Tax Rate: ' . $tax_amount . '<br/>';
+					$_tax = &new jigoshop_tax();
+
+					$tax_amount = $_tax->calc_tax( $price, $rate, true );
 					
 					$price = $price - $tax_amount;
 					
-					//echo '-> Price: ' . $price . '<br/>';
-	
 				endif;
 				
 			endif;
 		
 		endif;
 		
-		//var_dump($tax_amount);
-		//var_dump($price);
-		
 		return $price;
+	}
+	
+	/** Returns the base tax rate */
+	function get_tax_base_rate() {
+		
+		if ( $this->is_taxable() && get_option('jigoshop_calc_taxes')=='yes') :
+			
+			$_tax = &new jigoshop_tax();
+			$rate = $_tax->get_shop_base_rate( $this->data['tax_class'] );
+			
+			return $rate;
+			
+		endif;
+		
 	}
 	
 	/** Returns the price in html format */

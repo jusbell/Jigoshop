@@ -17,7 +17,7 @@ jQuery( function($){
 	// ORDERS
 	
 	jQuery('#order_items_list button.remove_row').live('click', function(){
-		var answer = confirm(jigoshop_wp.remove_item_notice);
+		var answer = confirm(params.remove_item_notice);
 		if (answer){
 			jQuery(this).parent().parent().remove();
 		}
@@ -25,7 +25,7 @@ jQuery( function($){
 	});
 	
 	jQuery('button.calc_totals').live('click', function(){
-		var answer = confirm(jigoshop_wp.cart_total);
+		var answer = confirm(params.cart_total);
 		if (answer){
 			
 			var item_count = jQuery('#order_items_list tr').size();
@@ -86,7 +86,7 @@ jQuery( function($){
 			
 			subtotal = itemTotal;
 			
-			/*if (jigoshop_wp.prices_include_tax == 'yes')
+			/*if (params.prices_include_tax == 'yes')
 				total = parseFloat(subtotal) - parseFloat(discount) + parseFloat(shipping) + parseFloat(shipping_tax);
 			else*/
 				total = parseFloat(subtotal) + parseFloat(tax) - parseFloat(discount) + parseFloat(shipping) + parseFloat(shipping_tax);
@@ -104,22 +104,34 @@ jQuery( function($){
 	
 	jQuery('button.add_shop_order_item').click(function(){
 		
-		var item_id = jQuery('input.item_id').val();
+		var item_id = jQuery('select.item_id').val();
 		
 		if (item_id) {
-			
-			jQuery('input.item_id').css('border-color', '').val('');
 
-			jQuery('table.jigoshop_order_items tbody').append('<tr><td><input type="text" name="item_id[]" placeholder="'+jigoshop_wp.ID+'" value="" /></td><td><input type="text" name="item_name[]" placeholder="'+jigoshop_wp.item_name+'" value="" /></td><td><input type="text" name="item_quantity[]" placeholder="'+jigoshop_wp.quantity+'" value="" /></td><td><input type="text" name="item_cost[]" placeholder="'+jigoshop_wp.cost_unit+'" value="" /></td><td><input type="text" name="item_tax_rate[]" placeholder="'+jigoshop_wp.tax_rate+'" value="" /></td><td class="center"><button type="button" class="remove_row button">&times;</button></td></tr>');
+			jQuery('table.jigoshop_order_items').block({ message: null, overlayCSS: { background: '#fff url(' + params.plugin_url + '/assets/images/ajax-loader.gif) no-repeat center', opacity: 0.6 } });
 			
+			var data = {
+				action: 		'jigoshop_add_order_item',
+				item_to_add: 	jQuery('select.item_id').val(),
+				security: 		params.add_order_item_nonce
+			};
+
+			jQuery.post( params.ajax_url, data, function(response) {
+				
+				jQuery('table.jigoshop_order_items tbody#order_items_list').append( response );
+				jQuery('table.jigoshop_order_items').unblock();
+				jQuery('select.item_id').css('border-color', '').val('');
+			
+			});
+
 		} else {
-			jQuery('input.item_id').css('border-color', 'red');
+			jQuery('select.item_id').css('border-color', 'red');
 		}
 
 	});
 	
 	jQuery('button.billing-same-as-shipping').live('click', function(){
-		var answer = confirm(jigoshop_wp.copy_billing);
+		var answer = confirm(params.copy_billing);
 		if (answer){
 			jQuery('input#shipping_first_name').val( jQuery('input#billing_first_name').val() );
 			jQuery('input#shipping_last_name').val( jQuery('input#billing_last_name').val() );

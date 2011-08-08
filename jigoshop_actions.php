@@ -5,6 +5,7 @@
  * Various hooks Jigoshop uses to do stuff. index:
  *
  *		- Get variation
+ *		- Add order item
  *		- When default permalinks are enabled, redirect shop page to post type archive url
  *		- Add to Cart
  *		- Clear cart
@@ -71,6 +72,97 @@ function display_variation_data() {
 	// Quit out
 	die();
 }
+
+/**
+ * Add order item
+ *
+ * Add order item via ajax
+ *
+ * @since 		1.0
+ */
+add_action('wp_ajax_jigoshop_add_order_item', 'jigoshop_add_order_item');
+
+function jigoshop_add_order_item() {
+	
+	check_ajax_referer( 'add-order-item', 'security' );
+	
+	global $wpdb;
+	
+	$item_to_add = trim(stripslashes($_POST['item_to_add']));
+	
+	$post = '';
+	
+	// Find the item
+	if (is_numeric($item_to_add)) :
+		$post = get_post( $item_to_add );
+	endif;
+	
+	if (!$post || $post->post_type!=='product') :
+		$post_id = $wpdb->get_var($wpdb->prepare("
+			SELECT post_id
+			FROM $wpdb->posts
+			LEFT JOIN $wpdb->postmeta ON ($wpdb->posts.ID = $wpdb->postmeta.post_id)
+			WHERE $wpdb->postmeta.meta_key = 'SKU'
+			AND $wpdb->posts.post_status = 'publish'
+			AND $wpdb->posts.post_type = 'shop_product'
+			AND $wpdb->postmeta.meta_value = '".$item_to_add."'
+			LIMIT 1
+		"));
+		$post = get_post( $post_id );
+	endif;
+	
+	if (!$post || $post->post_type!=='product') :
+		die();
+	endif;
+	
+	$_product = &new jigoshop_product( $post->ID );
+	
+	$loop = 0;
+	?>
+	<tr>
+		<td class="product-id">#<?php echo $_product->id; ?></td>
+		<td class="product-sku"><?php if ($_product->sku) echo $_product->sku; ?></td>
+		<td class="name"><a href="<?php echo admin_url('post.php?post='. $_product->id .'&action=edit'); ?>"><?php echo $_product->get_title(); ?></a></td>
+		<td class="variation"><select name="item_variation[<?php echo $loop; ?>]">
+			<option value=""><?php _e('N/A', 'jigoshop'); ?></option>
+			<?php
+				if ( $_product->is_type('variable') ) :
+					$children = $_product->get_children();
+					if ($children) :
+						foreach ($children as $variation) :
+							echo '<option value="'.$variation->ID.'">'.$variation->post_title.'</option>';
+						endforeach;
+					endif;
+				endif;
+			?>
+		</select></td>
+		<td>
+			<table class="meta" cellspacing="0">
+				<tfoot>
+					<tr>
+						<td colspan="3"><button class="add_meta button"><?php _e('Add meta', 'jigoshop'); ?></button></td>
+					</tr>
+				</tfoot>
+				<tbody></tbody>
+			</table>
+		</td>
+		<?php do_action('jigoshop_admin_order_item_values', $_product); ?>
+		<td class="quantity"><input type="text" name="item_quantity[<?php echo $loop; ?>]" placeholder="<?php _e('Quantity e.g. 2', 'jigoshop'); ?>" value="1" /></td>
+		<td class="cost"><input type="text" name="item_cost[<?php echo $loop; ?>]" placeholder="<?php _e('Cost per unit ex. tax e.g. 2.99', 'jigoshop'); ?>" value="<?php echo $_product->get_price(); ?>" /></td>
+		<td class="tax"><input type="text" name="item_tax_rate[<?php echo $loop; ?>]" placeholder="<?php _e('Tax Rate e.g. 20.0000', 'jigoshop'); ?>" value="<?php echo $_product->get_tax_base_rate(); ?>" /></td>
+		<td class="center">
+			<input type="hidden" name="item_id[<?php echo $loop; ?>]" value="<?php echo $_product->id; ?>" />
+			<input type="hidden" name="item_name[<?php echo $loop; ?>]" value="<?php echo $_product->get_title(); ?>" />
+			<button type="button" class="remove_row button">&times;</button>
+		</td>
+	</tr>
+	<?php
+	
+	// Quit out
+	die();
+	
+}
+
 
 /**
  * When default permalinks are enabled, redirect shop page to post type archive url

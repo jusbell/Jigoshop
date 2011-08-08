@@ -67,40 +67,38 @@
   vertical-align: top;
 }
 #jigoshop-order-items .buttons .item_id {
-  width: 100px;
+  width: 300px;
   vertical-align: top;
 }
 #jigoshop-order-items .buttons button {
   margin: 2px 0 0 0;
 }
+#jigoshop-order-items .buttons-alt {
+  float: right;
+  padding-right: 6px;
+}
 #jigoshop-order-items h3 small {
   color: #999;
 }
 dl.totals {
-  float: right;
-  clear: right;
-  width: 520px;
   margin: 6px 6px 0;
+  float: left;
 }
 dl.totals dt {
-  font-size: 1.2em;
-  width: 200px;
   float: left;
+  width: 100%;
+  font-size: 1.2em;
   font-weight: bold;
-  text-align: right;
-  clear: right;
   line-height: 2em;
 }
 dl.totals dd {
-  width: 300px;
-  padding-left: 20px;
-  float: right;
-  text-align: left;
   line-height: 2em;
   font-size: 1.2em;
+  float: left;
+  width: 100%;
 }
 dl.totals dd input {
-  width: 300px;
+  width: 100%;
   vertical-align: middle;
   float: left;
   font-size: 1em;
@@ -149,6 +147,10 @@ dl.totals dd input.last {
 }
 .jigoshop_order_items_wrapper table.jigoshop_order_items .center {
   text-align: center;
+}
+.jigoshop_order_items_wrapper table.jigoshop_order_items table.meta tr td {
+  padding: 1px 4px 1px 0;
+  border: 0;
 }
 .jigoshop-order-panel {
   overflow: hidden;

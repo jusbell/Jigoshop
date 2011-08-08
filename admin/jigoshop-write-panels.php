@@ -30,6 +30,7 @@ function jigoshop_meta_boxes() {
 	
 	add_meta_box( 'jigoshop-order-data', __('Order Data', 'jigoshop'), 'jigoshop_order_data_meta_box', 'shop_order', 'normal', 'high' );
 	add_meta_box( 'jigoshop-order-items', __('Order Items <small>&ndash; Note: if you edit quantities or remove items from the order you will need to manually change the item\'s stock levels.</small>', 'jigoshop'), 'jigoshop_order_items_meta_box', 'shop_order', 'normal', 'high');
+	add_meta_box( 'jigoshop-order-totals', __('Order Totals', 'jigoshop'), 'jigoshop_order_totals_meta_box', 'shop_order', 'side', 'default');
 	
 	add_meta_box( 'jigoshop-order-actions', __('Order Actions', 'jigoshop'), 'jigoshop_order_actions_meta_box', 'shop_order', 'side', 'default');
 	
@@ -149,17 +150,22 @@ function jigoshop_write_panel_scripts() {
 	wp_enqueue_script('thickbox');
 	wp_enqueue_style('thickbox');
 	
-	$data = array( 'remove_item_notice' =>  __("Remove this item? If you have previously reduced this item's stock, or this order was submitted by a customer, will need to manually restore the item's stock.", 'jigoshop'),
-				   'cart_total' => __("Calc totals based on order items, discount amount, and shipping?", 'jigoshop'),
-				   'copy_billing' => __("Copy billing information to shipping information? This will remove any currently entered shipping information.", 'jigoshop'),
-				   'prices_include_tax' => get_option('jigoshop_prices_include_tax'),
-				   'ID' =>  __('ID', 'jigoshop'),
-				   'item_name' => __('Item Name', 'jigoshop'),
-				   'quantity' => __('Quantity e.g. 2', 'jigoshop'),
-				   'cost_unit' => __('Cost per unit e.g. 2.99', 'jigoshop'),
-				   'tax_rate' => __('Tax Rate e.g. 20.0000', 'jigoshop'),
-				 );
-	wp_localize_script( 'jigoshop-writepanel', 'jigoshop_wp', $data );
+	$params = array( 
+		'remove_item_notice' 			=>  __("Remove this item? If you have previously reduced this item's stock, or this order was submitted by a customer, will need to manually restore the item's stock.", 'jigoshop'),
+		'cart_total' 					=> __("Calc totals based on order items, discount amount, and shipping?", 'jigoshop'),
+		'copy_billing' 					=> __("Copy billing information to shipping information? This will remove any currently entered shipping information.", 'jigoshop'),
+		'prices_include_tax' 			=> get_option('jigoshop_prices_include_tax'),
+		'ID' 							=>  __('ID', 'jigoshop'),
+		'item_name' 					=> __('Item Name', 'jigoshop'),
+		'quantity' 						=> __('Quantity e.g. 2', 'jigoshop'),
+		'cost_unit' 					=> __('Cost per unit e.g. 2.99', 'jigoshop'),
+		'tax_rate' 						=> __('Tax Rate e.g. 20.0000', 'jigoshop'),
+		'plugin_url' 					=> jigoshop::plugin_url(),
+		'ajax_url' 						=> admin_url('admin-ajax.php'),
+		'add_order_item_nonce' 			=> wp_create_nonce("add-order-item")
+	 );
+				 
+	wp_localize_script( 'jigoshop-writepanel', 'params', $params );
 	
 	
 }

@@ -138,7 +138,7 @@ function variable_product_write_panel_js() {
 						<button type="button" class="remove_variation button"><?php _e('Remove', 'jigoshop'); ?></button>\
 						<strong><?php _e('Variation:', 'jigoshop'); ?></strong>\
 						<?php
-							foreach ($attributes as $attribute) :
+							if ($attributes) foreach ($attributes as $attribute) :
 								
 								if ( $attribute['variation']!=='yes' ) continue;
 								

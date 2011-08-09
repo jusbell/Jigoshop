@@ -262,7 +262,7 @@ function jigoshop_order_items_meta_box($post) {
 			</thead>
 			<tbody id="order_items_list">	
 				
-				<?php $loop = 0; if (sizeof($order_items)>0 && isset($order_items[0]['id'])) foreach ($order_items as $item) : 
+				<?php if (sizeof($order_items)>0 && isset($order_items[0]['id'])) foreach ($order_items as $item) : 
 					
 					if (isset($item['variation_id']) && $item['variation_id'] > 0) :
 						$_product = &new jigoshop_product_variation( $item['variation_id'] );
@@ -271,30 +271,18 @@ function jigoshop_order_items_meta_box($post) {
 					endif;
 
 					?>
-					<tr>
+					<tr class="item">
 						<td class="product-id"><?php echo $item['id']; ?></td>
 						<td class="variation-id"><?php if ($item['variation_id']) echo $item['variation_id']; else echo '-'; ?></td>
 						<td class="product-sku"><?php if ($_product->sku) echo $_product->sku; ?></td>
 						<td class="name"><a href="<?php echo admin_url('post.php?post='. $_product->id .'&action=edit'); ?>"><?php echo $item['name']; ?></a></td>
-						<td class="variation"><select name="item_variation[<?php echo $loop; ?>]">
-							<option value=""><?php _e('N/A', 'jigoshop'); ?></option>
-							<?php
-								if ( $_product->is_type('variable') ) :
-									$children = $_product->get_children();
-									if ($children) :
-										foreach ($children as $variation) :
-											
-											echo '<option value="'.$variation->ID.'"';
-											
-											selected($variation->ID, $item['variation_id']);
-											
-											echo '>'.$variation->post_title.'</option>';
-											
-										endforeach;
-									endif;
-								endif;
-							?>
-						</select></td>
+						<td class="variation"><?php
+							if (isset($_product->variation_data)) :
+								echo jigoshop_get_formatted_variation( $_product->variation_data, true );
+							else :
+								echo '-';
+							endif;
+						?></td>
 						<td>
 							<table class="meta" cellspacing="0">
 								<tfoot>
@@ -306,16 +294,16 @@ function jigoshop_order_items_meta_box($post) {
 							</table>
 						</td>
 						<?php do_action('jigoshop_admin_order_item_values', $_product, $item); ?>
-						<td class="quantity"><input type="text" name="item_quantity[<?php echo $loop; ?>]" placeholder="<?php _e('Quantity e.g. 2', 'jigoshop'); ?>" value="<?php echo $item['qty']; ?>" /></td>
-						<td class="cost"><input type="text" name="item_cost[<?php echo $loop; ?>]" placeholder="<?php _e('Cost per unit ex. tax e.g. 2.99', 'jigoshop'); ?>" value="<?php echo $item['cost']; ?>" /></td>
-						<td class="tax"><input type="text" name="item_tax_rate[<?php echo $loop; ?>]" placeholder="<?php _e('Tax Rate e.g. 20.0000', 'jigoshop'); ?>" value="<?php echo $item['taxrate']; ?>" /></td>
+						<td class="quantity"><input type="text" name="item_quantity[]" placeholder="<?php _e('Quantity e.g. 2', 'jigoshop'); ?>" value="<?php echo $item['qty']; ?>" /></td>
+						<td class="cost"><input type="text" name="item_cost[]" placeholder="<?php _e('Cost per unit ex. tax e.g. 2.99', 'jigoshop'); ?>" value="<?php echo $item['cost']; ?>" /></td>
+						<td class="tax"><input type="text" name="item_tax_rate[]" placeholder="<?php _e('Tax Rate e.g. 20.0000', 'jigoshop'); ?>" value="<?php echo $item['taxrate']; ?>" /></td>
 						<td class="center">
-							<input type="hidden" name="item_id[<?php echo $loop; ?>]" value="<?php echo $item['id']; ?>" />
-							<input type="hidden" name="item_name[<?php echo $loop; ?>]" value="<?php echo $item['name']; ?>" />
+							<input type="hidden" name="item_id[]" value="<?php echo $item['id']; ?>" />
+							<input type="hidden" name="item_name[]" value="<?php echo $item['name']; ?>" />
 							<button type="button" class="remove_row button">&times;</button>
 						</td>
 					</tr>
-				<?php $loop++; endforeach; ?>
+				<?php endforeach; ?>
 			</tbody>
 		</table>
 	</div>

@@ -457,6 +457,8 @@ function jigoshop_price( $price, $args = array() ) {
 function jigoshop_get_formatted_variation( $variation = '', $flat = false ) {
 	if ($variation && is_array($variation)) :
 		
+		$return = '';
+		
 		if (!$flat) :
 			$return = '<dl class="variation">';
 		endif;

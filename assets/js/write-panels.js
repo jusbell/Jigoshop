@@ -28,7 +28,7 @@ jQuery( function($){
 		var answer = confirm(params.cart_total);
 		if (answer){
 			
-			var item_count = jQuery('#order_items_list tr').size();
+			var item_count = jQuery('#order_items_list tr.item').size();
 			var subtotal = 0;
 			var discount = jQuery('input#order_discount').val();
 			var shipping = jQuery('input#order_shipping').val();
@@ -52,30 +52,26 @@ jQuery( function($){
 					if (!itemCost) itemCost = 0;
 					if (!itemTax) itemTax = 0;
 					
-					totalItemCost = itemCost * itemQty;
-					
 					totalItemTax = 0;
+					
+					totalItemCost = itemCost * itemQty;
 					
 					if (itemTax && itemTax>0) {
 						
-						taxRate = Math.round( ((itemTax / 100) + 1) *100)/100; // tax rate to 2 decimal places
+						//taxRate = Math.round( ((itemTax / 100) + 1) * 100)/100; // tax rate to 2 decimal places
 						
-						totalItemCost = totalItemCost * 100;
+						taxRate = itemTax/100;
 						
-						totalItemTax = Math.round(totalItemCost*taxRate);
+						//totalItemTax = itemCost * taxRate;
 						
-						//totalCostExTax = Math.round( (totalItemCost / taxRate) *100 )/100; // 2 decimal places
+						itemCost = (itemCost * taxRate);
 						
-						//totalCostExTax = totalCostExTax / 100;
+						totalItemTax = Math.round(itemCost*Math.pow(10,2))/Math.pow(10,2);
 						
-						totalItemTax = totalItemTax - totalItemCost;
+						alert(totalItemTax);
 						
-						totalItemCost = totalItemCost / 100;
-						
-						totalItemTax = totalItemTax / 100;
-						
-						//totalItemTax = totalItemCost - totalCostExTax;
-						
+						totalItemTax = totalItemTax * itemQty;
+
 					}
 					
 					itemTotal = itemTotal + totalItemCost;
@@ -86,10 +82,7 @@ jQuery( function($){
 			
 			subtotal = itemTotal;
 			
-			/*if (params.prices_include_tax == 'yes')
-				total = parseFloat(subtotal) - parseFloat(discount) + parseFloat(shipping) + parseFloat(shipping_tax);
-			else*/
-				total = parseFloat(subtotal) + parseFloat(tax) - parseFloat(discount) + parseFloat(shipping) + parseFloat(shipping_tax);
+			total = parseFloat(subtotal) + parseFloat(tax) - parseFloat(discount) + parseFloat(shipping) + parseFloat(shipping_tax);
 			
 			if (total < 0 ) total = 0;
 

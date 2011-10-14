@@ -68,24 +68,19 @@ function variable_product_type_options($post_id=null, $variation_id=null) {
 								if ( !boolval($attribute['variation']) ) continue;
 								
 								$options = $attribute['value'];
-								if (!is_array($options)) {
-									$options = explode(',', $options);
-								}
-
 								$value = get_post_meta( $variation->ID, 'tax_' . sanitize_title($attribute['name']), true );
-
-								printf('<select name="%s[]"><option value="">%s</option>'
-									,'tax_' . sanitize_title($attribute['name'])
-									, __('Any ', 'jigoshop').$attribute['name'].'&hellip;');
-
-								foreach($options as $option) :
-									$option = trim($option);
-									printf('<option %s value="%s">%s</option>'
-										, selected($value, $option, false)
-										, $option
-										, ucfirst($option));
+								
+								if (!is_array($options)) $options = explode(',', $options);
+								
+								echo '<select name="tax_' . sanitize_title($attribute['name']) . '['.$loop.']"><option value="">'.__('Any ', 'jigoshop').$attribute['name'].'&hellip;</option>';
+								
+								foreach ( $options as $option ) :
+									$option = trim( $option );
+									echo '<option ';
+									selected( $value, $option );
+									echo ' value="'.$option.'">'.get_term_by( 'slug', $option, 'pa_'.strtolower( sanitize_title($attribute['name']) ))->name.'</option>';
 								endforeach;	
-									
+								
 								echo '</select>';
 	
 							endforeach;

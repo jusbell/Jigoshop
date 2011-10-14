@@ -16,16 +16,16 @@
  */
 class jigoshop_product {
 
-	var $id;
-	var $exists;
-	var $data;
-	var $sku;
-	var $attributes;
-	var $post;
-	var $stock;
-	var $children;
-	var $visibility;
-	var $product_type;
+	public $id;
+	public $exists;
+	public $data;
+	public $sku;
+	protected $attributes;
+	private $post;
+	public $stock;
+	public $children;
+	protected $visibility;
+	public $product_type;
 	protected $price;
     protected $sale_price;
     
@@ -638,11 +638,29 @@ class jigoshop_product {
 				if ($alt==1) echo 'alt';
 				echo '"><th>'.wptexturize($attribute['name']).'</th><td>';
 
-				if (is_array($attribute['value'])) {
-                    $attribute['value'] = implode(', ', $attribute['value']);
+                $value = $attribute['value'];
+                
+                // if taxonomy we should replace all term slugs with original names
+                if ( $attribute['is_taxonomy'] == 'yes' ) {
+                    if ( ! is_array( $value )) {
+                        $value = array( $value );
+                    }
+                    
+                    $taxonomy_name = 'pa_' . sanitize_title( $attribute['name'] );
+                    
+                    $new_value = array();
+                    foreach ( $value as $term_slug ) {
+                        $term = get_term_by( 'slug', $term_slug, $taxonomy_name );
+                        $new_value[] = $term->name;
+                    }
+                    $value = $new_value;
+                }
+                
+                if ( is_array($value ) ) {
+                    $value = implode( ', ', $value );
                 }
 
-				echo wpautop(wptexturize($attribute['value']));
+				echo wpautop( wptexturize( $value ));
 
 				echo '</td></tr>';
             }

@@ -142,12 +142,14 @@ function jigoshop_filter_catalog_query( $request ) {
 		
 		$request['meta_query'] = jigoshop_filter_meta_query( $this_query );
 		
-		// establish any filters for orderby, order and anything else added to the filter
-		$filters = array();
-		$filters = apply_filters( 'loop-shop-query', $filters );
-		foreach( $filters as $key => $value ) :
-			$request[$key] = $value;
-		endforeach;
+		if (!$this_query->is_admin) :
+			// establish any filters for orderby, order and anything else added to the filter
+			$filters = array();
+			$filters = apply_filters('loop-shop-query', $filters);
+			foreach ($filters as $key => $value) :
+				$request[$key] = $value;
+			endforeach;
+		endif;
 		
 	endif;
 	

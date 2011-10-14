@@ -353,3 +353,23 @@ function jigoshop_price_filter( $filtered_posts ) {
 	return $filtered_posts;
 }
 add_filter( 'loop-shop-posts-in', 'jigoshop_price_filter' );
+
+/**
+ * Filters terms with a specific slug name
+ *
+ * @param $clauses
+ * @param $taxonomies
+ * @param $args
+ * @return string
+ */
+function jigoshop_filter_get_terms_slug_in($clauses, $taxonomies, $args){
+	if (isset($args['slug__in'])){
+		$in = implode("', '", $args['slug__in']);
+		if (!empty($clauses['where'])){
+			$clauses['where'] .= " AND";
+		}
+		$clauses['where'] .= " t.slug IN ('".$in."')";
+	}
+	return $clauses;
+}
+add_filter('terms_clauses', 'jigoshop_filter_get_terms_slug_in', 10, 3);

@@ -339,6 +339,7 @@ if (!function_exists('jigoshop_grouped_add_to_cart')) {
 		<?php
 	}
 }
+
 if (!function_exists('jigoshop_variable_add_to_cart')) {
 	function jigoshop_variable_add_to_cart() {
 
@@ -394,12 +395,17 @@ if (!function_exists('jigoshop_variable_add_to_cart')) {
                         <td><label for="<?php echo $sanitized_name; ?>"><?php echo $aname; ?></label></td>
                         <td><select id="<?php echo $sanitized_name; ?>" name="tax_<?php echo $sanitized_name; ?>">
 							<option value=""><?php echo __('Choose an option', 'jigoshop') ?>&hellip;</option>
-							<?php if ( taxonomy_exists( 'pa_'.$sanitized_name )) : ?>
-								<?php $terms = get_terms( 'pa_'.$sanitized_name, array( 'orderby' => 'slug', 'hide_empty' => '0' ) ); ?>
-								<?php foreach ( $terms as $term ): ?>
-									<option value="<?php echo $term->slug; ?>"><?php echo $term->name; ?></option>
-								<?php endforeach;?>
-							<?php endif;?>
+							<?php
+							if ( taxonomy_exists( 'pa_'.$sanitized_name )) :
+								// Add filter to only pull back attributes we are interested in
+								add_filter('terms_clauses', 'jigoshop_filter_get_terms_slug_in', 10, 3);
+								$terms = get_terms( 'pa_'.$sanitized_name, array( 'orderby' => 'slug', 'hide_empty' => '0', 'slug__in'=>$avalues) );
+								remove_filter('terms_clauses', 'jigoshop_filter_get_terms_slug_in', 10, 3);
+								foreach ( $terms as $term ):
+									?><option value="<?php echo $term->slug; ?>"><?php echo $term->name; ?></option><?php
+								endforeach;
+							endif;
+							?>
                         </td>
                     </tr>
 	

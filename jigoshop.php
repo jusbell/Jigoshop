@@ -46,6 +46,8 @@ if (is_admin()) add_action('init', 'jigoshop_update_check');
  * Include core files and classes
  **/
 
+include_once( 'classes/abstract/jigoshop_base.class.php' );
+include_once( 'classes/abstract/jigoshop_singleton.php' );
 include_once( 'classes/jigoshop_sanitize.class.php' );
 include_once( 'classes/jigoshop.class.php' );
 include_once( 'jigoshop_taxonomy.php' );
@@ -55,12 +57,12 @@ include_once( 'jigoshop_templates.php' );
 include_once( 'jigoshop_template_actions.php' );
 include_once( 'jigoshop_emails.php' );
 include_once( 'jigoshop_query.php' );
-//include_once( 'jigoshop_cron.php' );	/* we may use this at some point, leaving -JAP- */
 include_once( 'jigoshop_actions.php' );
 include_once( 'gateways/gateways.class.php' );
 include_once( 'gateways/gateway.class.php' );
-include_once( 'shipping/shipping.class.php' );
+include_once( 'classes/jigoshop_shipping.class.php' );
 include_once( 'shipping/shipping_method.class.php' );
+//include_once( 'jigoshop_cron.php' );	/* we may use this at some point, leaving -JAP- */
 
 /**
  * Include admin area
@@ -68,7 +70,7 @@ include_once( 'shipping/shipping_method.class.php' );
 if (is_admin()) include_once( 'admin/jigoshop-admin.php' );
 
 /**
- * Include all classes, dro-ins and shipping/gateways modules
+ * Include all classes, drop-ins and shipping/gateways modules
  */
 $include_files = array();
 
@@ -92,13 +94,14 @@ if ($include_files) :
 	endforeach;
 endif;
 
-$jigoshop 					= jigoshop::get();
-
-// Init class singletons
-$jigoshop_customer 			= jigoshop_customer::get();				// Customer class, sorts out session data such as location
-$jigoshop_shipping 			= jigoshop_shipping::get();				// Shipping class. loads and stores shipping methods
+// TODO: as of 0.9.9.2 and prior, Singletons are in use. -JAP-
+// These should be looked into being re-factored to allow for easier and more effective Unit Testing.
+// Dependency Injection:  http://components.symfony-project.org/dependency-injection/trunk/book/01-Dependency-Injection
+$jigoshop 					= jigoshop::instance();
+$jigoshop_customer 			= jigoshop_customer::instance();		// Customer class, sorts out session data such as location
+$jigoshop_shipping 			= jigoshop_shipping::instance();		// Shipping class. loads and stores shipping methods
 $jigoshop_payment_gateways 	= jigoshop_payment_gateways::get();		// Payment gateways class. loads and stores payment methods
-$jigoshop_cart 				= jigoshop_cart::get();					// Cart class, stores the cart contents
+$jigoshop_cart 				= jigoshop_cart::instance();			// Cart class, stores the cart contents
 
 // Constants
 if (!defined('JIGOSHOP_USE_CSS')) :
@@ -139,7 +142,7 @@ function jigoshop_remove_post_type_thumbnail_support() {
  * Filters and hooks
  **/
 add_action('init', 'jigoshop_init', 0);
-add_action('plugins_loaded', 'jigoshop_shipping::init', 1); 		// Load shipping methods - some may be added by plugins
+add_action('plugins_loaded', 'jigoshop_shipping::method_inits', 1); // Load shipping methods - some may be added by plugins
 add_action('plugins_loaded', 'jigoshop_payment_gateways::init', 1); // Load payment methods - some may be added by plugins
 
 if (get_option('jigoshop_force_ssl_checkout')=='yes') add_action( 'wp_head', 'jigoshop_force_ssl');
@@ -574,6 +577,7 @@ function jigoshop_force_ssl_images( $content ) {
 	return $content;
 }
 
+// http://www.xe.com/symbols.php
 function get_jigoshop_currency_symbol() {
 	$currency = get_option('jigoshop_currency');
 	$currency_symbol = '';
@@ -589,6 +593,9 @@ function get_jigoshop_currency_symbol() {
 		
 		case 'EUR' : $currency_symbol = '&euro;'; break; /* European Euro */
 		case 'IDR' : $currency_symbol = '&#82;&#112;'; break; /* Indonesia Rupiah */
+		case 'INR' : $currency_symbol = '&#8360;'; break; /* India Rupee */
+		case 'HRK' : $currency_symbol = '&#107;&#110;'; break; /* Croatia Kuna */
+		case 'HUF' : $currency_symbol = '&#70;&#116;'; break; /* Hungary Forint */
 		case 'JPY' : $currency_symbol = '&yen;'; break; /* Japanese Yen */
 		case 'RUB' : $currency_symbol = '&#1088;&#1091;&#1073;'; break; /* Russia Ruble */
 		case 'TRY' : $currency_symbol = '&#8356;'; break; /* Turkey Lira */
@@ -596,7 +603,6 @@ function get_jigoshop_currency_symbol() {
 		case 'CHF' :
 		case 'CZK' :
 		case 'DKK' :
-		case 'HUF' :
 		case 'ILS' :
 		case 'MYR' :
 		case 'NOK' :
@@ -622,6 +628,7 @@ function jigoshop_price( $price, $args = array() ) {
 	$num_decimals = (int) get_option('jigoshop_price_num_decimals');
 	$currency_pos = get_option('jigoshop_currency_pos');
 	$currency_symbol = get_jigoshop_currency_symbol();
+	$price = str_replace(array(get_option('jigoshop_price_thousand_sep'),get_option('jigoshop_price_decimal_sep')),array('','.'),$price);
 	$price = number_format( (double) $price, $num_decimals, get_option('jigoshop_price_decimal_sep'), get_option('jigoshop_price_thousand_sep') );
 
 	switch ($currency_pos) :

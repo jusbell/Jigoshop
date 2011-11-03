@@ -136,20 +136,18 @@ function jigoshop_filter_catalog_query( $request ) {
         	$request['post_status'] = 'publish';
         	$request['posts_per_page'] = apply_filters( 'loop_shop_per_page', get_option( 'jigoshop_catalog_per_page' ));
 			
+			// establish any filters for orderby, order and anything else added to the filter
+			$filters = array();
+			$filters = apply_filters( 'loop-shop-query', $filters );
+			foreach( $filters as $key => $value ) :
+				$request[$key] = $value;
+			endforeach;
+			
 			// modify the query for specific product ID's for layered nav and price filter widgets
 			$request['post__in'] = apply_filters( 'loop-shop-posts-in', $all_post_ids );
 		endif;
 		
 		$request['meta_query'] = jigoshop_filter_meta_query( $this_query );
-		
-		if (!$this_query->is_admin) :
-			// establish any filters for orderby, order and anything else added to the filter
-			$filters = array();
-			$filters = apply_filters('loop-shop-query', $filters);
-			foreach ($filters as $key => $value) :
-				$request[$key] = $value;
-			endforeach;
-		endif;
 		
 	endif;
 	
@@ -192,7 +190,7 @@ function jigoshop_layered_nav_init() {
 
 	global $_chosen_attributes;
 
-	$attribute_taxonomies = jigoshop::getAttributeTaxonomies();
+	$attribute_taxonomies = jigoshop_product::getAttributeTaxonomies();
 	if ( $attribute_taxonomies ) :
 		foreach ($attribute_taxonomies as $tax) :
 
@@ -353,23 +351,3 @@ function jigoshop_price_filter( $filtered_posts ) {
 	return $filtered_posts;
 }
 add_filter( 'loop-shop-posts-in', 'jigoshop_price_filter' );
-
-/**
- * Filters terms with a specific slug name
- *
- * @param $clauses
- * @param $taxonomies
- * @param $args
- * @return string
- */
-function jigoshop_filter_get_terms_slug_in($clauses, $taxonomies, $args){
-	if (isset($args['slug__in'])){
-		$in = implode("', '", $args['slug__in']);
-		if (!empty($clauses['where'])){
-			$clauses['where'] .= " AND";
-		}
-		$clauses['where'] .= " t.slug IN ('".$in."')";
-	}
-	return $clauses;
-}
-add_filter('terms_clauses', 'jigoshop_filter_get_terms_slug_in', 10, 3);

@@ -184,7 +184,8 @@ $options_settings = apply_filters('jigoshop_options_settings', array(
 		'type' 		=> 'select',
 		'options' => array(
 			'no'  => __('No', 'jigoshop'),
-			'yes' => __('Yes', 'jigoshop')
+			'yes' => __('Yes', 'jigoshop'),
+      'cart' => __('Redirect to Cart', 'jigoshop'),
 		)
 	),
 	
@@ -409,8 +410,10 @@ $options_settings = apply_filters('jigoshop_options_settings', array(
 			'CZK' => __('Czech Koruna', 'jigoshop'),
 			'DKK' => __('Danish Krone', 'jigoshop'),
 			'HKD' => __('Hong Kong Dollar (&#36;)', 'jigoshop'),
-			'HUF' => __('Hungarian Forint', 'jigoshop'),
+			'HUF' => __('Hungarian Forint (&#70;&#116;)', 'jigoshop'),
+			'HRK' => __('Croatian Kuna (&#107;&#110;)', 'jigoshop'),
 			'IDR' => __('Indonesia Rupiah (&#82;&#112;)', 'jigoshop'),
+			'INR' => __('Indian Rupee (&#8360;)', 'jigoshop'),
 			'ILS' => __('Israeli Shekel', 'jigoshop'),
 			'JPY' => __('Japanese Yen (&yen;)', 'jigoshop'),
 			'MYR' => __('Malaysian Ringgits', 'jigoshop'),

@@ -15,7 +15,10 @@
  * @license    http://jigoshop.com/license/commercial-edition
  */
 class jigoshop_product {
-
+	
+	private static $attribute_taxonomies = NULL;
+	// reseting these all to public for now, fatal errors from certain places that direct access
+	// the whole class needs refactoring  -JAP-
 	public $id;
 	public $exists;
 	public $data;
@@ -29,10 +32,6 @@ class jigoshop_product {
 	public $price;
     public $sale_price;
     
-    //@fixme are these two variables ever used?  --  (No  -JAP-)
-//	var $sale_price_dates_to;
-//	var $sale_price_dates_from;
-
 	/**
 	 * Loads all product data from custom fields
 	 *
@@ -484,21 +483,35 @@ class jigoshop_product {
         
         if ($this->has_child()) {
             $child_prices = array();
+            $previous_price = -1.0;
+            $has_price_variation = false;
 
             foreach ($this->children as $child) {
       
                 // Nasty hack to prevent disabled variations from affecting the price
-                if($this->product_type != 'grouped' && $child->product->variation->post_status == 'publish') {
-                    $child_prices[] = (float)$child->product->get_price();
-                } elseif($this->product_type == 'grouped') {
-                    $child_prices[] = (float)$child->product->get_price();
-                }
+      		if($this->product_type == 'grouped' || 
+      			($this->product_type != 'grouped' && $child->product->variation->post_status == 'publish') ) {
+      		    $child_prices[] = (float)$child->product->get_price();
+      		    
+      		    // check for a price variation on the product variations
+      		    if ($previous_price > 0.0 && $previous_price != (float)$child->product->get_price()) {
+      		    	$has_price_variation = true;
+      		    }
+      		    $previous_price = (float)$child->product->get_price();
+      		    
+      		}
             }
             
-            sort($child_prices);
-            $lowest_price = $child_prices[0];
-            
-            $price_html .= '<span class="from">' . __('From: ', 'jigoshop') . '</span>' . jigoshop_price($lowest_price);
+            // only add from to tag when there is a price variation on variable products
+            if ($has_price_variation) {
+	        sort($child_prices);
+	        $lowest_price = $child_prices[0];
+		$price_html .= '<span class="from">' . __('From: ', 'jigoshop') . '</span>' . jigoshop_price($lowest_price);
+	    }
+	    // otherwise return price from product
+	    else {
+	    	$price_html .= jigoshop_price($this->get_price());
+	    }
         } else {
             if ($this->price === '') {
                 $price_html = __('Price Not Announced');
@@ -705,10 +718,10 @@ class jigoshop_product {
 
                 //check attributes of all variations that are visible (enabled)
                 if ($variation instanceof jigoshop_product_variation && $variation->is_visible()) {
-                    $attributes = $variation->get_variation_attributes();
-
-                    if (is_array($attributes)) {
-                        foreach ($attributes as $aname => $avalue) {
+                    $options = $variation->get_variation_attributes();
+					
+                    if (is_array($options)) {
+                        foreach ($options as $aname => $avalue) {
                             if ($aname == $name) {
                                 $values[] = $avalue;
                             }
@@ -720,11 +733,10 @@ class jigoshop_product {
             //empty value indicates that all options for given attribute are available
             if(in_array('', $values)) {
                 $options = $attribute['value'];
-						
                 if (!is_array($options)) {
                     $options = explode(',', $options);
                 }
-                
+				
                 $values = $options;
             }
               
@@ -737,4 +749,19 @@ class jigoshop_product {
         return $available;
     }
 
+    /**
+     * Get attribute taxonomies. Taxonomies are lazy loaded.
+     * 
+     * @return array of stdClass objects representing attributes
+     */
+    public static function getAttributeTaxonomies() {
+        global $wpdb;
+                
+        if(self::$attribute_taxonomies === NULL) {
+            self::$attribute_taxonomies = $wpdb->get_results("SELECT * FROM ".$wpdb->prefix."jigoshop_attribute_taxonomies;"); 
+        }
+        
+        return self::$attribute_taxonomies;
+    }
+	
 }

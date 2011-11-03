@@ -93,7 +93,6 @@ if (!function_exists('jigoshop_template_loop_add_to_cart')) {
 		// do not show "add to cart" button if product's price isn't announced
 		if( $_product->get_price() === '' AND ! ($_product->is_type('variable') OR $_product->is_type('grouped')) ) return;
 		
-		// TODO: this could use refactoring / cleaning up
 		if( $_product->is_type('variable') OR $_product->is_type('grouped') ) {
 			echo '<a href="'. get_permalink($_product->id).'" class="button">'.__('Select', 'jigoshop').'</a>';
 			return;
@@ -339,7 +338,6 @@ if (!function_exists('jigoshop_grouped_add_to_cart')) {
 		<?php
 	}
 }
-
 if (!function_exists('jigoshop_variable_add_to_cart')) {
 	function jigoshop_variable_add_to_cart() {
 
@@ -354,7 +352,6 @@ if (!function_exists('jigoshop_variable_add_to_cart')) {
         foreach($children as $child) {
             /* @var $variation jigoshop_product_variation */
             $variation = $child->product;
-            
             if($variation instanceof jigoshop_product_variation && $variation->is_visible()) {
                 $vattrs = $variation->get_variation_attributes();
                 $availability = $variation->get_availability();
@@ -372,7 +369,7 @@ if (!function_exists('jigoshop_variable_add_to_cart')) {
 
                 $variationsAvailable[] = array(
                     'variation_id' => $variation->get_variation_id(),
-                    'attributes' => $vattrs,
+                    'attributes' => $vattrs, /* for now, set to null or attributes compare in scripts.js fails. go figure? */
                     'image_src' => $image,
                     'image_link' => $image_link,
                     'price_html' => '<span class="price">'.$variation->get_price_html().'</span>',
@@ -394,18 +391,23 @@ if (!function_exists('jigoshop_variable_add_to_cart')) {
                     	<?php $sanitized_name = sanitize_title( $aname ); ?>
                         <td><label for="<?php echo $sanitized_name; ?>"><?php echo $aname; ?></label></td>
                         <td><select id="<?php echo $sanitized_name; ?>" name="tax_<?php echo $sanitized_name; ?>">
-							<option value=""><?php echo __('Choose an option', 'jigoshop') ?>&hellip;</option>
-							<?php
-							if ( taxonomy_exists( 'pa_'.$sanitized_name )) :
-								$terms = get_terms( 'pa_'.$sanitized_name, array( 'orderby' => 'slug', 'hide_empty' => '0', 'slug__in'=>$avalues) );
-								foreach ( $terms as $term ):
-									?><option value="<?php echo $term->slug; ?>"><?php echo $term->name; ?></option><?php
-								endforeach;
-							endif;
-							?>
+							<option value=""><?php echo __('Choose an option ', 'jigoshop') ?>&hellip;</option>
+							<?php foreach ( $avalues as $value ) : ?>
+								<?php if ( taxonomy_exists( 'pa_'.$sanitized_name )) : ?>
+									<?php $term = get_term_by( 'slug', $value, 'pa_'.$sanitized_name ); ?>
+									<option value="<?php echo $term->slug; ?>"><?php echo $term->name; ?></option>
+								<?php else : ?>
+									<?php
+									//	this should be a custom text attribute with values (one,two,three)
+									//	we have no way to get the pretty name instead of the slug?  -JAP-
+									//	perhaps we need to be creating a taxonomy for these? (currently we don't)
+									//	it will show pretty name if no option selected on variation, 'Choose Any [attr]'
+									?>
+									<option value="<?php echo sanitize_title( $value ); ?>"><?php echo $value; ?></option>
+								<?php endif;?>
+							<?php endforeach; ?>
                         </td>
                     </tr>
-	
                 <?php endforeach;?>
 				</tbody>
 			</table>
@@ -578,7 +580,7 @@ if (!function_exists('jigoshop_related_products')) {
  **/
 if (!function_exists('jigoshop_shipping_calculator')) {
 	function jigoshop_shipping_calculator() {
-		if (jigoshop_shipping::$enabled && get_option('jigoshop_enable_shipping_calc')=='yes' && jigoshop_cart::needs_shipping()) :
+		if (jigoshop_shipping::is_enabled() && get_option('jigoshop_enable_shipping_calc')=='yes' && jigoshop_cart::needs_shipping()) :
 		?>
 		<form class="shipping_calculator" action="<?php echo jigoshop_cart::get_cart_url(); ?>" method="post">
 			<h2><a href="#" class="shipping-calculator-button"><?php _e('Calculate Shipping', 'jigoshop'); ?> <span>&darr;</span></a></h2>

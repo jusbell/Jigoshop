@@ -1,6 +1,6 @@
 <?php
 /**
- * Contains methods for sanitizing arrays of data
+ * Contains methods for sanitizing arrays and objects of data
  *
  * DISCLAIMER
  *
@@ -14,32 +14,69 @@
  * @copyright  Copyright (c) 2011 Jigowatt Ltd.
  * @license    http://jigoshop.com/license/commercial-edition
  */
-class Sanitize {
+ 
+class jigoshop_sanitize {
 
-	public $_fields = array();
-
+	private $_fields = array();
+	
+	
 	public function __construct( $uncleanArray )
 	{
 		foreach ( $uncleanArray as $key => $value ) {
 			$this->_fields[$this->_sanitize( $key )] = $this->_sanitize( $value );
 		}
 	}
-
+	
+	
+	/**
+	 * Sanitize or clean an input field.
+	 * Removes leading and trailing white space, all html and php tags, encodes any html entities
+	 *     using the default (ENT_COMPAT | ENT_HTML401), and unquotes any quoted strings. 
+	 *
+	 * @param object $input - The object to sanitize.
+	 * @return object - The sanitized object.
+	 * 
+	 * @since 0.9.9.2
+	 */
 	private function _sanitize( $input )
 	{
-		if ( is_array( $input )) {
+		$input = $this->_fixIncompleteObject( $input );
+		
+		if ( is_array( $input ) || is_object($input) ) {
+			$output = array();
 			foreach ( $input as $key => $value ) {
-				$input[$key] = $this->_sanitize( $value );
+				$output[$key] = $this->_sanitize( $value );
 			}
-			return $input;
+			return $output;
 		}
+//		return stripslashes( trim( $input ));
 		return stripslashes( htmlentities( strip_tags( trim( $input ))));
 	}
-
+	
+	
+	/**
+	 * _fixIncompleteObject repairs an object if it is incomplete.
+	 *
+	 * Removes the __PHP_Incomplete_Class crap from the object,
+	 * so that is_object() will correctly identify $input as an object
+	 *
+	 * @param object $object - The "broken" object
+	 * @return object - The "fixed" object
+	 */
+	private function _fixIncompleteObject( $input )
+	{
+		if ( ! is_object( $input ) && gettype( $input ) == 'object' ) {
+			return unserialize( serialize( $input ));
+		}
+		return $input;
+	}
+	
+	
 	public function __isset( $key )
 	{
 		return isset( $this->_fields[$key] );
 	}
+	
 	
 	public function __unset( $key )
 	{
@@ -47,6 +84,7 @@ class Sanitize {
 			unset( $this->_fields[$key] );
 		}
 	}
+	
 	
 	public function __get( $key )
 	{
@@ -56,6 +94,7 @@ class Sanitize {
 			return null;
 		}
 	}
+	
 	
 	public function __set( $key, $value )
 	{

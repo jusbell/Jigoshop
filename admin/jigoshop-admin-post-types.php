@@ -288,33 +288,18 @@ function jigoshop_custom_order_columns($column) {
 		case "total_cost" :
 			?>
 			<table cellpadding="0" cellspacing="0" class="cost">
-        		<tr>
-        			<th><?php _e('Subtotal', 'jigoshop'); ?></th>
-        			<td><?php echo jigoshop_price($order->order_subtotal); ?></td>
-        		</tr>
-        		<?php if ($order->order_shipping>0) : ?><tr>
-        			<th><?php _e('Shipping', 'jigoshop'); ?></th>
-        			<td><?php echo jigoshop_price($order->order_shipping); ?></td>
-        		</tr><?php endif; ?>
-        		<?php if ($order->get_total_tax()>0) : ?><tr>
-        			<th><?php _e('Tax', 'jigoshop'); ?></th>
-        			<td><?php echo jigoshop_price($order->get_total_tax()); ?></td>
-        		</tr><?php endif; ?>
-        		<?php if ($order->order_discount>0) : ?><tr>
-        			<th><?php _e('Discount', 'jigoshop'); ?></th>
-        			<td><?php echo jigoshop_price($order->order_discount); ?></td>
-        		</tr><?php endif; ?>
-        		<tr>	
-        			<th><?php _e('Total', 'jigoshop'); ?></th>
-        			<td><?php echo jigoshop_price($order->order_total); ?></td>
-        		</tr>
+				<?php
+				$totals = $order->get_itemized_totals();
+				foreach($totals as $total){/* @var $total jigoshop_total */
+					printf('<tr><th>%s</th><td>%s</td></tr>', $total->get_title_display(false), $total->get_amount_display(false));
+				}
+				?>
             </table>
             <?php
 		break;
 	}
 }
 add_action('manage_shop_order_posts_custom_column', 'jigoshop_custom_order_columns', 2);
-
 
 /**
  * Order page filters

@@ -45,8 +45,9 @@ class jigoshop_cart extends jigoshop_singleton {
   		self::$applied_coupons = array();
 
 		if ( isset($_SESSION['coupons']) ) self::$applied_coupons = $_SESSION['coupons'];
-		
-		self::calculate_totals();
+
+		// calculate totals on init so we can check for nonce
+		add_action('init', 'jigoshop_cart::calculate_totals');
 	}
 	
 	/** Gets the cart data from the PHP session */
@@ -466,6 +467,8 @@ class jigoshop_cart extends jigoshop_singleton {
 			self::$total = self::$subtotal + self::$tax_total + self::$shipping_tax_total - self::$discount_total + jigoshop_shipping::get_total();
 		endif;
 
+		do_action('jigoshop_calculate_totals');
+
 		if (self::$total < 0) self::$total = 0;
 	}
 
@@ -556,6 +559,38 @@ class jigoshop_cart extends jigoshop_singleton {
 		endif;
 	}
 
+	function get_itemized_totals() {
+
+		$totals = array();
+
+		$totals[] = new jigoshop_total(__('Subtotal', 'jigoshop'), jigoshop_cart::get_cart_subtotal(), 10);
+
+		if (jigoshop_cart::get_cart_shipping_total()) {
+			$total = new jigoshop_total(__('Shipping', 'jigoshop'), jigoshop_cart::get_cart_shipping_total(), 20);
+			$total->title_meta = jigoshop_countries::shipping_to_prefix() . ' ' . jigoshop_countries::$countries[jigoshop_customer::get_shipping_country()];
+			$total->amount_meta = jigoshop_cart::get_cart_shipping_title();
+			$totals[] = $total;
+		}
+
+		if (jigoshop_cart::get_cart_tax()) {
+			$total = new jigoshop_total(__('Tax', 'jigoshop'), jigoshop_cart::get_cart_tax(), 30);
+			$total->title_meta = sprintf('estimated for %s%s', jigoshop_countries::estimated_for_prefix(), jigoshop_countries::$countries[jigoshop_countries::get_base_country()]);
+			$totals[] = $total;
+		}
+
+		if (jigoshop_cart::get_total_discount()) {
+			$totals[] = new jigoshop_total(__('Discount', 'jigoshop'), jigoshop_cart::get_total_discount(), 40);
+		}
+
+		$totals[] = new jigoshop_total(__('Total', 'jigoshop'), jigoshop_cart::get_total(), 50);
+
+		$totals = apply_filters('jigoshop_cart_totals', $totals);
+
+		jigoshop_total::sort($totals);
+
+		return $totals;
+	}
+
 	/** gets title of the chosen shipping method */
 	function get_cart_shipping_title() {
 		if ( jigoshop_shipping::get_label() ) :
@@ -636,6 +671,7 @@ class jigoshop_cart extends jigoshop_singleton {
 		self::$applied_coupons = array();
 		unset( $_SESSION['cart'] );
 		unset( $_SESSION['coupons'] );
+		do_action('jigoshop_clear_cart');
 	}
 
 }

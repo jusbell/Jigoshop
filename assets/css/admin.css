@@ -87,13 +87,9 @@ dl.totals {
 dl.totals dt {
   float: left;
   width: 100%;
-  font-size: 1.2em;
   font-weight: bold;
-  line-height: 2em;
 }
 dl.totals dd {
-  line-height: 2em;
-  font-size: 1.2em;
   float: left;
   width: 100%;
 }

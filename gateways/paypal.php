@@ -243,6 +243,10 @@ class paypal extends jigoshop_payment_gateway {
 		$paypal_args['item_name_'.$item_loop] = __('Shipping cost', 'jigoshop');
 		$paypal_args['quantity_'.$item_loop] = '1';
 		$paypal_args['amount_'.$item_loop] = number_format($order->order_shipping, 2);
+
+
+		$paypal_args = apply_filters('payment_gateway_args', $this->id, $paypal_args, array('item_loop'=>$item_loop));
+		
 		
 		$paypal_args_array = array();
 

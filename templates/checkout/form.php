@@ -35,7 +35,7 @@ $get_checkout_url = apply_filters( 'jigoshop_get_checkout_url', jigoshop_cart::g
 		</div>
 	</div>
 	
-	<h3 id="order_review_heading"><?php _e('Your order', 'jigoshop'); ?></h3>
+	<h3 id="order_review_heading"><?php _e('Order Summary', 'jigoshop'); ?></h3>
 	
 	<?php jigoshop_get_template('checkout/review_order.php', false); ?>
 	

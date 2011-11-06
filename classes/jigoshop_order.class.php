@@ -36,8 +36,8 @@ class jigoshop_order {
 	/** Gets an order from the database */
 	function get_order( $id = 0 ) {
 		if (!$id) return false;
-		if ($result = get_post( $id )) : 	 	  	 	
-			$this->populate( $result );	 	 	 	 	 	
+		if ($result = get_post( $id )) :
+			$this->populate( $result );
 			return true;
 		endif;
 		return false;
@@ -58,38 +58,42 @@ class jigoshop_order {
 		$this->items 				= (array) get_post_meta( $this->id, 'order_items', true );
 		$this->order_data			= (array) maybe_unserialize( get_post_meta( $this->id, 'order_data', true ) );
 
-		$this->billing_first_name 	= (string) $this->get_value_from_data('billing_first_name');
-		$this->billing_last_name 	= (string) $this->get_value_from_data('billing_last_name');
-		$this->billing_company	 	= (string) $this->get_value_from_data('billing_company');
-		$this->billing_address_1 	= (string) $this->get_value_from_data('billing_address_1');
-		$this->billing_address_2 	= (string) $this->get_value_from_data('billing_address_2');
-		$this->billing_city 		= (string) $this->get_value_from_data('billing_city');
-		$this->billing_postcode 	= (string) $this->get_value_from_data('billing_postcode');
-		$this->billing_country 		= (string) $this->get_value_from_data('billing_country');
-		$this->billing_state 		= (string) $this->get_value_from_data('billing_state');
-		$this->billing_email 		= (string) $this->get_value_from_data('billing_email');
-		$this->billing_phone 		= (string) $this->get_value_from_data('billing_phone');
-		$this->shipping_first_name 	= (string) $this->get_value_from_data('shipping_first_name');
-		$this->shipping_last_name	= (string) $this->get_value_from_data('shipping_last_name');
-		$this->shipping_company 	= (string) $this->get_value_from_data('shipping_company');
-		$this->shipping_address_1 	= (string) $this->get_value_from_data('shipping_address_1');
-		$this->shipping_address_2 	= (string) $this->get_value_from_data('shipping_address_2');
-		$this->shipping_city 		= (string) $this->get_value_from_data('shipping_city');
-		$this->shipping_postcode 	= (string) $this->get_value_from_data('shipping_postcode');
-		$this->shipping_country 	= (string) $this->get_value_from_data('shipping_country');
-		$this->shipping_state 		= (string) $this->get_value_from_data('shipping_state');
+		foreach($this->order_data as $key=>$value){
+			$this->{$key} = $value;
+		}
 
-		$this->shipping_method 		= (string) $this->get_value_from_data('shipping_method');
-		$this->payment_method 		= (string) $this->get_value_from_data('payment_method');
-		
-		$this->order_subtotal 		= (string) $this->get_value_from_data('order_subtotal');
-		
-		$this->order_shipping 		= (string) $this->get_value_from_data('order_shipping');
-		$this->order_discount 		= (string) $this->get_value_from_data('order_discount');
-		$this->order_tax 			= (string) $this->get_value_from_data('order_tax');
-		$this->order_shipping_tax	= (string) $this->get_value_from_data('order_shipping_tax');
-		$this->order_total 			= (string) $this->get_value_from_data('order_total');
-	
+//		$this->billing_first_name 	= (string) $this->get_value_from_data('billing_first_name');
+//		$this->billing_last_name 	= (string) $this->get_value_from_data('billing_last_name');
+//		$this->billing_company	 	= (string) $this->get_value_from_data('billing_company');
+//		$this->billing_address_1 	= (string) $this->get_value_from_data('billing_address_1');
+//		$this->billing_address_2 	= (string) $this->get_value_from_data('billing_address_2');
+//		$this->billing_city 		= (string) $this->get_value_from_data('billing_city');
+//		$this->billing_postcode 	= (string) $this->get_value_from_data('billing_postcode');
+//		$this->billing_country 		= (string) $this->get_value_from_data('billing_country');
+//		$this->billing_state 		= (string) $this->get_value_from_data('billing_state');
+//		$this->billing_email 		= (string) $this->get_value_from_data('billing_email');
+//		$this->billing_phone 		= (string) $this->get_value_from_data('billing_phone');
+//		$this->shipping_first_name 	= (string) $this->get_value_from_data('shipping_first_name');
+//		$this->shipping_last_name	= (string) $this->get_value_from_data('shipping_last_name');
+//		$this->shipping_company 	= (string) $this->get_value_from_data('shipping_company');
+//		$this->shipping_address_1 	= (string) $this->get_value_from_data('shipping_address_1');
+//		$this->shipping_address_2 	= (string) $this->get_value_from_data('shipping_address_2');
+//		$this->shipping_city 		= (string) $this->get_value_from_data('shipping_city');
+//		$this->shipping_postcode 	= (string) $this->get_value_from_data('shipping_postcode');
+//		$this->shipping_country 	= (string) $this->get_value_from_data('shipping_country');
+//		$this->shipping_state 		= (string) $this->get_value_from_data('shipping_state');
+//
+//		$this->shipping_method 		= (string) $this->get_value_from_data('shipping_method');
+//		$this->payment_method 		= (string) $this->get_value_from_data('payment_method');
+//
+//		$this->order_subtotal 		= (string) $this->get_value_from_data('order_subtotal');
+//
+//		$this->order_shipping 		= (string) $this->get_value_from_data('order_shipping');
+//		$this->order_discount 		= (string) $this->get_value_from_data('order_discount');
+//		$this->order_tax 			= (string) $this->get_value_from_data('order_tax');
+//		$this->order_shipping_tax	= (string) $this->get_value_from_data('order_shipping_tax');
+//		$this->order_total 			= (string) $this->get_value_from_data('order_total');
+
 		// Formatted Addresses
 		$formatted_address = array();
 		$country = ($this->billing_country && isset(jigoshop_countries::$countries[$this->billing_country])) ? jigoshop_countries::$countries[$this->billing_country] : $this->billing_country;
@@ -127,11 +131,36 @@ class jigoshop_order {
 		else :
 			$this->status = 'pending';
 		endif;
-			
+
 	}
-	
+
 	function get_value_from_data( $key ) {
 		if (isset($this->order_data[$key])) return $this->order_data[$key]; else return '';
+	}
+
+	function get_itemized_totals(){
+		$totals = array();
+		$totals[] = new jigoshop_total(__('Subtotal', 'jigoshop'), $this->order_subtotal, 10);
+
+		if ($this->order_shipping > 0) {
+			$totals[] = new jigoshop_total(__('Shipping', 'jigoshop'), $this->order_shipping, 20);
+		}
+
+		if ($this->get_total_tax() > 0) {
+			$totals[] = new jigoshop_total(__('Tax', 'jigoshop'), $this->get_total_tax(), 30);
+		}
+
+		if ($this->order_discount > 0) {
+			$totals[] = new jigoshop_total(__('Discount', 'jigoshop'), $this->order_discount, 40);
+		}
+
+		$totals[] = new jigoshop_total(__('Total', 'jigoshop'), $this->order_total, 999);
+
+		$totals = apply_filters('jigoshop_order_totals', $totals, $this);
+
+		jigoshop_total::sort($totals);
+
+		return $totals;
 	}
 	
 	/** Gets shipping and product tax */

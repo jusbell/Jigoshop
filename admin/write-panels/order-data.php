@@ -362,10 +362,40 @@ function jigoshop_order_totals_meta_box($post) {
 	if (!isset($data['order_tax'])) $data['order_tax'] = '';
 	if (!isset($data['order_total'])) $data['order_total'] = '';
 	if (!isset($data['order_shipping_tax'])) $data['order_shipping_tax'] = '';
+	
 	?>
 	<dl class="totals">
 		<dt><?php _e('Subtotal:', 'jigoshop'); ?></dt>
 		<dd><input type="text" id="order_subtotal" name="order_subtotal" placeholder="0.00 <?php _e('(ex. tax)', 'jigoshop'); ?>" value="<?php echo $data['order_subtotal']; ?>" class="first" /></dd>
+
+		<?php // TODO: Make this less of a hack..., needs to be more extensible  ?>
+		<?php if (isset($data[jigoshop_fees::$fee_key])): ?>
+			<dt><?php _e('Additional Fees:', 'jigoshop'); ?></dt>
+			<dd>
+				<?php
+				foreach((array) $data[jigoshop_fees::$fee_key] as $fee_id => $fee):
+					?>
+					<div class="additional-fee"><?php
+					foreach($fee as $key=>$value){
+						if ($key == 'name'){?>
+							<span><?php echo $fee['name'] ?></span><?php if (isset($fee['option'])): ?>&nbsp;-&nbsp;<span class="description"><?php echo $fee['option'] ?></span><?php endif; ?>
+							<input class="widefat" type="text" id="additional_fees" name="additional_fees[<?php echo $fee_id ?>][amount]" placeholder="0.00" value="<?php echo $fee['amount']; ?>"/>
+							<?php
+						}
+						if ($key != 'amount'){
+							printf('<input type="hidden" name="%s[%d][%s]" value="%s"/>'
+								, jigoshop_fees::$fee_key
+								, $fee_id
+								, $key
+								, $fee[$key]
+							);
+						}
+					}
+					?>
+					</div>
+				<?php endforeach; ?>
+			</dd>
+		<?php endif; ?>
 
 		<dt><?php _e('Shipping &amp; Handling:', 'jigoshop'); ?></dt>
 		<dd><input type="text" id="order_shipping" name="order_shipping" placeholder="0.00 <?php _e('(ex. tax)', 'jigoshop'); ?>" value="<?php echo $data['order_shipping']; ?>" class="first" /> <input type="text" name="shipping_method" id="shipping_method" value="<?php echo $data['shipping_method']; ?>" class="last" placeholder="<?php _e('Shipping method...', 'jigoshop'); ?>" /></dd>

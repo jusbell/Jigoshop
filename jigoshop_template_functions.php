@@ -659,7 +659,7 @@ if (!function_exists('jigoshop_shipping_selector')){
 
 				printf('<option value="%s" %s>%s &ndash; %s</option>'
 					, $method->id
-					, selected($method->chosen, true, fasle)
+					, selected($method->chosen, true, false)
 					, $method->title
 					, $desc);
 

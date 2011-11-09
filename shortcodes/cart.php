@@ -116,6 +116,9 @@ function jigoshop_cart( $atts ) {
 		echo '<p><a class="button" href="'.get_permalink(get_option('jigoshop_shop_page_id')).'">'.__('&larr; Return To Shop', 'jigoshop').'</a></p>';
 		return;
 	endif;
+
+	do_action('jigoshop_before_cart');
+	
 	?>
 	<?php if ($atts['cart_mode'] == 'update'): ?>
 	<form action="<?php echo jigoshop_cart::get_cart_url(); ?>" method="post">
@@ -262,9 +265,12 @@ function jigoshop_cart( $atts ) {
 
 	<?php if ($atts['cart_mode'] == 'update'): ?>
 	</form>
-	<?php endif; ?>
+	<?php
+	endif;
+	
+	do_action('jigoshop_after_cart');
 
-	<?php if (!$hide_cart_collaterals): ?>
+	if (!$hide_cart_collaterals): ?>
 	<div class="cart-collaterals">
 		<?php do_action('cart-collaterals'); ?>
 		<div class="cart_totals">

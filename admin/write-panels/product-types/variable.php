@@ -209,15 +209,7 @@ function variable_product_write_panel_js() {
 		};
 
 		$.post( ajaxurl, data, function(response) {
-								$sanitized_name = sanitize_title($attribute['name']);
-								
-								echo '<select name="tax_' . sanitize_title($attribute['name']).'[\' + loop + \']"><option value="">'.__('Any ', 'jigoshop').$attribute['name'].'&hellip;</option>';
-								if ( taxonomy_exists( 'pa_'.$sanitized_name )) :
-									$terms = get_terms( 'pa_'.$sanitized_name, 'orderby=slug&hide_empty=1' );
-								foreach($options as $option) :
-									echo '<option value="'.trim($option).'">'.ucfirst(trim($option)).'</option>';
-								endif;
-									
+			if (response.length > 0){
 				$('.jigoshop_configurations').append(response).unblock();
 			}
 		}, 'html');

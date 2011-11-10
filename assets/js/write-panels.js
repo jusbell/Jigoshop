@@ -255,16 +255,7 @@ jQuery( function($){
 				var size = jQuery('#attributes_list tr').length;
 				// Add custom attribute row
 				$('#attributes_list').append('<tr><td class="center"><button type="button" class="button move_up">&uarr;</button><button type="button" class="move_down button">&darr;</button><input type="hidden" name="attribute_position[' + size + ']" class="attribute_position" value="' + size + '" /></td><td><input type="text" name="attribute_names[' + size + ']" /><input type="hidden" name="attribute_is_taxonomy[' + size + ']" value="0" /></td><td><input type="text" name="attribute_values[' + size + ']" /></td><td class="center"><input type="checkbox" checked="checked" name="attribute_visibility[' + size + ']" value="1" /></td><td class="center"><input type="checkbox" name="attribute_variation[' + size + ']" value="1" /></td><td class="center"><button type="button" class="remove_row button">&times;</button></td></tr>');
-					+ '<td class="no-taxonomy custom center"><button type="button" class="button move_up">&uarr;</button><button type="button" class="move_down button">&darr;</button><input type="hidden" name="attribute_position[' + size + ']" class="attribute_position" value="' + size + '" /></td>'
-					+ '<td class="name">'
-						+ '<input type="text" name="attribute_names[' + size + ']" />'
-						+ '<input type="hidden" name="attribute_is_taxonomy[' + size + ']" value="0" />'
-					+ '<td><input type="text" name="attribute_values[' + size + ']" /></td>'
-					+ '<td class="center visibility"><input type="checkbox" checked="checked" name="attribute_visibility[' + size + ']" value="1" /></td>'
-					+ '<td class="center variation"><input type="checkbox" name="attribute_variation[' + size + ']" value="1" /></td>'
-					+ '<td class="center"><button type="button" class="remove_row button">&times;</button></td></tr>');
 			} else {
-				var size = jQuery('table.jigoshop_attributes tbody tr').size();
 				// Find taxonomy row
 				thisrow = theList.find('tr.' + attribute);
 				thisrow.find('input[name^=attribute_enabled]').val(1);
@@ -306,16 +297,6 @@ jQuery( function($){
 
 				$('div.attribute-warn').fadeOut();
 
-				show_attribute_table();
-				row_indexes();
-			}
-			return false;
-		});
-
-		jQuery('#attributes_list button.remove_row').live('click', function(){
-			var answer = confirm("Remove this attribute?")
-			if (answer){
-				jQuery(this).parent().parent().remove();
 				show_attribute_table();
 				row_indexes();
 			}

@@ -123,8 +123,8 @@ jQuery( function($){
 
 	});
 
-	jQuery('button.add_meta').live('click', function(){
-
+	jQuery('button.add_meta').live('click', function(e){
+		e.preventDefault();
 		jQuery(this).parent().parent().parent().parent().append('<tr><td><input type="text" name="meta_name[][]" placeholder="' + params.meta_name + '" /></td><td><input type="text" name="meta_value[][]" placeholder="' + params.meta_value + '" /></td></tr>');
 
 	});
@@ -254,7 +254,7 @@ jQuery( function($){
 
 				var size = jQuery('#attributes_list tr').length;
 				// Add custom attribute row
-				thisrow = $('<tr>'
+				$('#attributes_list').append('<tr><td class="center"><button type="button" class="button move_up">&uarr;</button><button type="button" class="move_down button">&darr;</button><input type="hidden" name="attribute_position[' + size + ']" class="attribute_position" value="' + size + '" /></td><td><input type="text" name="attribute_names[' + size + ']" /><input type="hidden" name="attribute_is_taxonomy[' + size + ']" value="0" /></td><td><input type="text" name="attribute_values[' + size + ']" /></td><td class="center"><input type="checkbox" checked="checked" name="attribute_visibility[' + size + ']" value="1" /></td><td class="center"><input type="checkbox" name="attribute_variation[' + size + ']" value="1" /></td><td class="center"><button type="button" class="remove_row button">&times;</button></td></tr>');
 					+ '<td class="no-taxonomy custom center"><button type="button" class="button move_up">&uarr;</button><button type="button" class="move_down button">&darr;</button><input type="hidden" name="attribute_position[' + size + ']" class="attribute_position" value="' + size + '" /></td>'
 					+ '<td class="name">'
 						+ '<input type="text" name="attribute_names[' + size + ']" />'
@@ -263,8 +263,8 @@ jQuery( function($){
 					+ '<td class="center visibility"><input type="checkbox" checked="checked" name="attribute_visibility[' + size + ']" value="1" /></td>'
 					+ '<td class="center variation"><input type="checkbox" name="attribute_variation[' + size + ']" value="1" /></td>'
 					+ '<td class="center"><button type="button" class="remove_row button">&times;</button></td></tr>');
-
 			} else {
+				var size = jQuery('table.jigoshop_attributes tbody tr').size();
 				// Find taxonomy row
 				thisrow = theList.find('tr.' + attribute);
 				thisrow.find('input[name^=attribute_enabled]').val(1);
@@ -274,10 +274,10 @@ jQuery( function($){
 				}
 
 				// Disable option for selected type and reset the select box
-				selected.attr('disabled',true).parent().val('');
+				$('table.jigoshop_attributes tbody').append( thisrow );
 			}
 
-			thisrow.appendTo(theList).show();
+				$(thisrow).show();
 
 			// Trigger change to hide the variation column
 			$('#product-type').change();

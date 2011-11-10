@@ -136,13 +136,14 @@ class paypal extends jigoshop_payment_gateway {
 		$shipping_name = explode(' ', $order->shipping_method);
 		
 		if (in_array($order->billing_country, array('US','CA'))) :
+			$order->billing_phone = str_replace(array('(', '-', ' ', ')'), '', $order->billing_phone);
 			$phone_args = array(
 				'night_phone_a' => substr($order->billing_phone,0,3),
-				'night_phone_b' => substr($order->billing_phone,0,3),
-				'night_phone_c' => substr($order->billing_phone,0,3),
+				'night_phone_b' => substr($order->billing_phone,3,3),
+				'night_phone_c' => substr($order->billing_phone,6,4),
 				'day_phone_a' 	=> substr($order->billing_phone,0,3),
-				'day_phone_b' 	=> substr($order->billing_phone,0,3),
-				'day_phone_c' 	=> substr($order->billing_phone,0,3)
+				'day_phone_b' 	=> substr($order->billing_phone,3,3),
+				'day_phone_c' 	=> substr($order->billing_phone,6,4)
 			);
 		else :
 			$phone_args = array(
@@ -150,6 +151,9 @@ class paypal extends jigoshop_payment_gateway {
 				'day_phone_b' 	=> $order->billing_phone
 			);
 		endif;		
+		
+		// filter redirect page
+		$checkout_redirect = apply_filters( 'jigoshop_get_checkout_redirect_page_id', get_option( 'jigoshop_thanks_page_id' ) );
 		
 		$paypal_args = array_merge(
 			array(
@@ -160,7 +164,7 @@ class paypal extends jigoshop_payment_gateway {
 				'charset' 				=> 'UTF-8',
 				'rm' 					=> 2,
 				'upload' 				=> 1,
-				'return' 				=> add_query_arg('key', $order->order_key, add_query_arg('order', $order_id, get_permalink(get_option('jigoshop_thanks_page_id')))),
+				'return' 				=> add_query_arg('key', $order->order_key, add_query_arg('order', $order_id, get_permalink( $checkout_redirect ))),
 				'cancel_return'			=> $order->get_cancel_order_url(),
 				//'cancel_return'			=> home_url(),
 				
@@ -230,8 +234,7 @@ class paypal extends jigoshop_payment_gateway {
 				
 				$paypal_args['item_name_'.$item_loop] = $title;
 				$paypal_args['quantity_'.$item_loop] = $item['qty'];
-				$paypal_args['amount_'.$item_loop] = $_product->get_price_excluding_tax();
-				
+				$paypal_args['amount_'.$item_loop] = number_format($_product->get_price_excluding_tax(), 2); //Apparently, Paypal did not like "28.4525" as the amount. Changing that to "28.45" fixed the issue.				
 			endif;
 		endforeach; endif;
        

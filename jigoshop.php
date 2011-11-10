@@ -14,9 +14,9 @@
  * Author:				Jigowatt
  * Author URI:			http://jigowatt.co.uk
  *
- * Version:				0.9.9.1
+ * Version:				0.9.9.3
  * Requires at least:	3.1
- * Tested up to:		3.2.1
+ * Tested up to:		3.3 Beta 3
  *
  * @package    			Jigoshop
  * @category   			Core
@@ -27,7 +27,7 @@
 
 @session_start();
 
-if (!defined("JIGOSHOP_VERSION")) define("JIGOSHOP_VERSION", "0.9.9.1");
+if (!defined("JIGOSHOP_VERSION")) define("JIGOSHOP_VERSION", "0.9.9.3");
 if (!defined("PHP_EOL")) define("PHP_EOL", "\r\n");
 
 load_plugin_textdomain('jigoshop', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/');
@@ -100,7 +100,7 @@ endif;
 $jigoshop 					= jigoshop::instance();
 $jigoshop_customer 			= jigoshop_customer::instance();		// Customer class, sorts out session data such as location
 $jigoshop_shipping 			= jigoshop_shipping::instance();		// Shipping class. loads and stores shipping methods
-$jigoshop_payment_gateways 	= jigoshop_payment_gateways::get();		// Payment gateways class. loads and stores payment methods
+$jigoshop_payment_gateways 	= jigoshop_payment_gateways::instance();// Payment gateways class. loads and stores payment methods
 $jigoshop_cart 				= jigoshop_cart::instance();			// Cart class, stores the cart contents
 
 // Constants
@@ -376,7 +376,8 @@ function jigoshop_frontend_scripts() {
 		'get_variation_nonce' 			=> wp_create_nonce("get-variation"),
 		'review_order_url'				=> jigoshop_get_template_file_url('checkout/review_order.php', true),
 		'option_guest_checkout'			=> get_option('jigoshop_enable_guest_checkout'),
-		'checkout_url'					=> admin_url('admin-ajax.php?action=jigoshop-checkout')
+		'checkout_url'					=> admin_url('admin-ajax.php?action=jigoshop-checkout'),
+		'load_fancybox'					=> JIGOSHOP_LOAD_FANCYBOX
 	);
 
 	if (isset($_SESSION['min_price'])) :
@@ -672,6 +673,7 @@ function jigoshop_get_formatted_variation( $variation = '', $flat = false ) {
 				foreach ( $terms as $term ) :
 					if ( $term->slug == $value ) $value = $term->name;
 				endforeach;
+				$name = get_taxonomy( 'pa_'.$name )->labels->name;
 			endif;
 
 			if ($flat) :

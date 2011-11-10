@@ -8,13 +8,15 @@ jQuery.fn.animateHighlight = function(highlightColor, duration) {
 jQuery(function(){
 	
 	// Lightbox
-	jQuery('a.zoom').fancybox({
-		'transitionIn'	:	'elastic',
-		'transitionOut'	:	'elastic',
-		'speedIn'		:	600, 
-		'speedOut'		:	200, 
-		'overlayShow'	:	true
-	});
+	if (params.load_fancybox) {
+		jQuery('a.zoom').fancybox({
+			'transitionIn'	:	'elastic',
+			'transitionOut'	:	'elastic',
+			'speedIn'		:	600, 
+			'speedOut'		:	200, 
+			'overlayShow'	:	true
+		});
+	}
 	
 	// Star ratings
 	jQuery('#rating').hide().before('<p class="stars"><span><a class="star-1" href="#">1</a><a class="star-2" href="#">2</a><a class="star-3" href="#">3</a><a class="star-4" href="#">4</a><a class="star-5" href="#">5</a></span></p>');
@@ -27,8 +29,8 @@ jQuery(function(){
 	});
 
 	// Price slider
-	var min_price = jQuery('.price_slider_amount #min_price').val();
-	var max_price = jQuery('.price_slider_amount #max_price').val();
+	var min_price = parseInt(jQuery('.price_slider_amount #min_price').val());
+	var max_price = parseInt(jQuery('.price_slider_amount #max_price').val());
 	
 	if (params.min_price) {
 		current_min_price = params.min_price;
@@ -177,28 +179,37 @@ jQuery(function(){
 	
 	//disable option fields that are unavaiable for current set of attributes
 	function update_variation_values(variations) {
-		
-		var current_attr_select = jQuery('.variations select').not('[disabled]').last();
-		current_attr_select.find('option:gt(0)').attr('disabled', 'disabled');
-		
-		var current_attr_name = current_attr_select.attr('name');
-		
-		for ( num in variations ) {
-			var attributes = variations[num].attributes;
-			
-			for(attr_name in attributes) {
-				var attr_val = attributes[attr_name];
-				
-				if ( attr_name == current_attr_name ) {
-					current_attr_select.find('option[value="'+attr_val+'"]').removeAttr('disabled');
-				}
-			}
-			// if they are all disabled, we should enable all of them? -JAP-
-			if ( jQuery(current_attr_select+':disabled').size() == current_attr_select.find('option:gt(0)').size() ) {
-		   		current_attr_select.find('option:gt(0)').removeAttr('disabled');
-			}
-		}
-		
+
+        // Loop through selects and disable/enable options based on selections
+        jQuery('.variations select').each(function( index, el ){
+        	
+        	current_attr_select = jQuery(el);
+        	
+        	// Disable all
+        	current_attr_select.find('option:gt(0)').attr('disabled', 'disabled');
+        	
+        	// Get name
+	        var current_attr_name 	= current_attr_select.attr('name');
+	        
+	        // Loop through variations
+	        for(num in variations) {
+	            var attributes = variations[num].attributes;
+	            
+	            for(attr_name in attributes) {
+	                var attr_val = attributes[attr_name];
+	                
+	                if(attr_name == current_attr_name) {
+	                    if (attr_val) {
+	                    	current_attr_select.find('option[value="'+attr_val+'"]').removeAttr('disabled');
+	                    } else {
+	                    	current_attr_select.find('option').removeAttr('disabled');
+	                    }
+	                }
+	            }
+	        }
+        	
+        });
+
 	}
 	
 	//show single variation details (price, stock, image)

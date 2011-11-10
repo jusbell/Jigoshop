@@ -63,29 +63,34 @@ function variable_product_type_options($post_id=null, $variation_id=null) {
 						<button type="button" class="remove_variation button" rel="<?php echo $variation->ID; ?>"><?php _e('Remove', 'jigoshop'); ?></button>
 						<strong>#<?php echo $variation->ID; ?> &mdash; <?php _e('Variation:', 'jigoshop'); ?></strong>
 						<?php
-							foreach ((array) $attributes as $attribute) :
+							foreach ($attributes as $attribute) :
 
-								if ( !boolval($attribute['variation']) ) continue;
-								
+								if ( $attribute['variation'] !== 'yes' ) continue;
+
 								$options = $attribute['value'];
-								if (!is_array($options)) {
-									$options = explode(',', $options);
-								}
-
 								$value = get_post_meta( $variation->ID, 'tax_' . sanitize_title($attribute['name']), true );
 
-								printf('<select name="%s[]"><option value="">%s</option>'
-									,'tax_' . sanitize_title($attribute['name'])
-									, __('Any ', 'jigoshop').$attribute['name'].'&hellip;');
+								$custom_attribute = false;
+								if ( ! is_array( $options )) :
+									$options = explode( ',', $options );
+									$custom_attribute = true;
+								endif;
 
-								foreach($options as $option) :
-									$option = trim($option);
-									printf('<option %s value="%s">%s</option>'
-										, selected($value, $option, false)
-										, $option
-										, ucfirst($option));
-								endforeach;	
-									
+								echo '<select name="tax_' . sanitize_title($attribute['name']) . '['.$loop.']"><option value="">'.__('Any ', 'jigoshop').$attribute['name'].' &hellip;</option>';
+
+								foreach ( $options as $option ) :
+									if ( $custom_attribute ) :
+										$prettyname = $option;
+									else :
+										$prettyname = get_term_by( 'slug', $option, 'pa_'.sanitize_title( $attribute['name'] ))->name;
+									endif;
+									$option = sanitize_title( $option ); /* custom attributes need sanitizing */
+									$output = '<option ';
+									$output .= selected( $value, $option );
+									$output .= ' value="'.$option.'">'.$prettyname.'</option>';
+									echo $output;
+								endforeach;
+
 								echo '</select>';
 	
 							endforeach;
@@ -435,7 +440,7 @@ function process_product_meta_variable( $data, $post_id ) {
                     //disable variation
                     $post_status = 'private';
                     //set error message
-                    $errors[] = sprintf(__('Variation #%s was disabled as it is already covered by other variation.', 'jigoshop'), $variation_id);
+                    $errors[] = sprintf(__('Variation #%s was disabled as it is already covered by another variation.', 'jigoshop'), $variation_id);
                     break;
                 }
             }

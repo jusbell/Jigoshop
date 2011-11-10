@@ -93,7 +93,7 @@ function jigoshop_new_order_notification( $order_id ) {
 
 	$message = ob_get_clean();
 	$message = html_entity_decode( strip_tags( $message ) );
-
+	
 	wp_mail( get_option('admin_email'), $subject, $message );
 }
 
@@ -238,6 +238,7 @@ function jigoshop_completed_order_customer_notification( $order_id ) {
 
 	$message = ob_get_clean();
 	$message = html_entity_decode( strip_tags( $message ) );
+	$message = apply_filters( 'jigoshop_completed_order_customer_notification_mail_message', $order_id, $message );
 
 	wp_mail( $order->billing_email, $subject, $message );
 }

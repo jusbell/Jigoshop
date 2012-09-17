@@ -647,6 +647,8 @@ function jigoshop_price( $price, $args = array() ) {
 		break;
 	endswitch;
 
+	$return = apply_filters( 'jigoshop_' . $currency_pos . '_currency_pos', $return, $price, $currency_symbol );
+
 	if ($ex_tax_label && get_option('jigoshop_calc_taxes')=='yes') $return .= __(' <small>(ex. tax)</small>', 'jigoshop');
 
 	return $return;
